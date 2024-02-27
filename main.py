@@ -87,6 +87,9 @@ colisiones_con_obstaculos = 0
 tiempo_inmunidad = 0
 duración_inmunidad = 1
 
+boton_volver_a_jugar = None
+boton_salir = None
+
 mostrar_interfaz_inicio = True
 jugando = False
 musica_reproduciendose = False
@@ -151,7 +154,8 @@ while jugando:
         ventana.fill(negro)
         boton_volver_a_jugar, boton_salir = crear_interfaz_perder(ventana)
         pygame.display.flip()
-        while True:
+        volver_a_jugar = False
+        while not volver_a_jugar:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -164,11 +168,10 @@ while jugando:
                         for obstaculo in obstaculos:
                             obstaculo.rect.x = random.randint(0, ancho - obstaculo.rect.width)
                             obstaculo.rect.y = random.randint(0, altura - obstaculo.rect.height)
-                        break
+                        volver_a_jugar = True
                     elif boton_salir.collidepoint(event.pos):
                         pygame.quit()
                         sys.exit()
-
     if nave.detectar_colision(otro_objeto):
         print("¡Llegaste al objetivo final!")
         jugando = False
