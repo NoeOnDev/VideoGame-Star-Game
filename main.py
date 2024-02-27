@@ -21,7 +21,7 @@ class ObjetoJuego:
 def crear_interfaz_inicio(ventana):
     fuente = pygame.font.Font(None, 36)
     texto = fuente.render("Presiona 'Start' para comenzar", True, (255, 255, 255))
-    texto_rect = texto.get_rect(center=ventana.get_rect().center)
+    texto_rect = texto.get_rect(center=(ventana.get_width() // 2, ventana.get_height() // 2 - 50))
     ventana.blit(texto, texto_rect)
 
     boton_start = pygame.Rect(400, 300, 200, 50)
@@ -31,6 +31,7 @@ def crear_interfaz_inicio(ventana):
     ventana.blit(texto_boton, texto_boton_rect)
 
     return boton_start
+
 
 pygame.init()
 pygame.mixer.init()
@@ -121,11 +122,11 @@ while jugando:
 
     if colisiones_con_obstaculos >= 3:  
         print("¡Perdiste! Demasiadas colisiones con obstáculos.")
-        corriendo = False
+        jugando = False
 
     if nave.detectar_colision(otro_objeto):
         print("¡Llegaste al objetivo final!")
-        corriendo = False
+        jugando = False
 
     ventana.fill(negro)
     nave.dibujar(ventana)
