@@ -2,13 +2,15 @@ import pygame
 import sys
 
 class ObjetoJuego:
-    def __init__(self, x, y, width, height, color=None):
+    def __init__(self, x, y, width, height, color=None, dx=0, dy=0):
         self.x_inicial = x
         self.y_inicial = y
         self.rect = pygame.Rect(x, y, width, height)
         self.superficie = pygame.Surface((width, height), pygame.SRCALPHA)
         if color:
             self.superficie.fill(color)
+        self.dx = dx
+        self.dy = dy
     
     def dibujar(self, ventana):
         ventana.blit(self.superficie, self.rect.topleft)
@@ -17,12 +19,21 @@ class ObjetoJuego:
         self.rect.x += dx
         self.rect.y += dy
 
+
     def detectar_colision(self, otro_objeto):
         return self.rect.colliderect(otro_objeto.rect)
 
     def reiniciar_posicion(self):
         self.rect.x = self.x_inicial
         self.rect.y = self.y_inicial
+        
+    def mover_enemis(self):
+        self.rect.x += self.dx
+        self.rect.y += self.dy
+
+    def cambiar_direccion(self, dx, dy):
+        self.dx = dx
+        self.dy = dy
 
 def crear_interfaz_inicio(ventana):
     fuente = pygame.font.Font(None, 36)
@@ -74,18 +85,19 @@ blanco = (255, 255, 255)
 nave = ObjetoJuego(50, altura - 100, 70, 70, azul)
 otro_objeto = ObjetoJuego(ancho - 100, 50, 50, 50, blanco)
 
-obstaculos = [ObjetoJuego(400, 100, 50, 50, verde),
-              ObjetoJuego(600, 300, 50, 50, verde),
-              ObjetoJuego(300, 500, 50, 50, verde),
-              ObjetoJuego(200, 200, 50, 50, verde),
-              ObjetoJuego(700, 400, 50, 50, verde),  
-              ObjetoJuego(800, 100, 50, 50, verde)]  
+obstaculos = [ObjetoJuego(400, 100, 50, 50, verde, dx=2, dy=0),
+              ObjetoJuego(600, 300, 50, 50, verde, dx=-2, dy=0),
+              ObjetoJuego(300, 500, 50, 50, verde, dx=0, dy=2),
+              ObjetoJuego(200, 200, 50, 50, verde, dx=0, dy=-2),
+              ObjetoJuego(700, 400, 50, 50, verde, dx=2, dy=0),  
+              ObjetoJuego(800, 100, 50, 50, verde, dx=-2, dy=0)]   
 
 velocidad = 2
 
 reloj = pygame.time.Clock()
 
 sonido_colision = pygame.mixer.Sound('sonido_colision_two.wav')
+
 musica_fondo = 'musica_fondo.mp3'
 
 colisiones_con_obstaculos = 0
@@ -146,12 +158,17 @@ while jugando:
         tiempo_inmunidad -= reloj.get_time() / 1000
 
     for obstaculo in obstaculos:
-        if nave.detectar_colision(obstaculo):
-            if tiempo_inmunidad <= 0:
-                print("¡Colisión con obstáculo!")
-                sonido_colision.play()
-                colisiones_con_obstaculos += 1
-                tiempo_inmunidad = duración_inmunidad
+        obstaculo.mover_enemis()
+        if obstaculo.rect.left < 0 or obstaculo.rect.right > ancho:
+            obstaculo.cambiar_direccion(-obstaculo.dx, obstaculo.dy)
+        if obstaculo.rect.top < 0 or obstaculo.rect.bottom > altura:
+            obstaculo.cambiar_direccion(obstaculo.dx, -obstaculo.dy)
+
+        if nave.detectar_colision(obstaculo) and tiempo_inmunidad <= 0:
+            print("Colisión con obstáculo")
+            colisiones_con_obstaculos += 1
+            tiempo_inmunidad = duración_inmunidad
+            sonido_colision.play()
 
     if colisiones_con_obstaculos >= 3:  
         print("¡Perdiste! Demasiadas colisiones con obstáculos.")
