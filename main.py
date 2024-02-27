@@ -160,6 +160,8 @@ while jugando:
         boton_volver_a_jugar, boton_salir = crear_interfaz_perder(ventana)
         pygame.display.flip()
         volver_a_jugar = False
+        pygame.mixer.music.stop()
+        musica_reproduciendose = False
         while not volver_a_jugar:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -172,6 +174,10 @@ while jugando:
                         tiempo_inmunidad = 0
                         volver_a_jugar = True
                         nave.reiniciar_posicion()
+                        if not musica_reproduciendose:
+                            pygame.mixer.music.load(musica_fondo)
+                            pygame.mixer.music.play(-1)
+                            musica_reproduciendose = True
                     elif boton_salir.collidepoint(event.pos):
                         pygame.quit()
                         sys.exit()
