@@ -60,8 +60,7 @@ velocidad = 2
 reloj = pygame.time.Clock()
 
 sonido_colision = pygame.mixer.Sound('sonido_colision.wav')
-pygame.mixer.music.load('musica_fondo.mp3')
-pygame.mixer.music.play(-1)
+musica_fondo = 'musica_fondo.mp3'
 
 colisiones_con_obstaculos = 0
 tiempo_inmunidad = 0
@@ -69,6 +68,7 @@ duración_inmunidad = 1
 
 mostrar_interfaz_inicio = True
 jugando = False
+musica_reproduciendose = False
 
 while mostrar_interfaz_inicio:
     for evento in pygame.event.get():
@@ -79,6 +79,10 @@ while mostrar_interfaz_inicio:
             if boton_start.collidepoint(evento.pos):
                 mostrar_interfaz_inicio = False
                 jugando = True
+                if not musica_reproduciendose:
+                    pygame.mixer.music.load(musica_fondo)
+                    pygame.mixer.music.play(-1)
+                    musica_reproduciendose = True
 
     ventana.fill(negro)
     boton_start = crear_interfaz_inicio(ventana)
