@@ -85,7 +85,7 @@ velocidad = 2
 
 reloj = pygame.time.Clock()
 
-sonido_colision = pygame.mixer.Sound('sonido_colision.wav')
+sonido_colision = pygame.mixer.Sound('sonido_colision_two.wav')
 musica_fondo = 'musica_fondo.mp3'
 
 colisiones_con_obstaculos = 0
