@@ -1,4 +1,5 @@
 import pygame
+import random
 import sys
 
 class ObjetoJuego:
@@ -31,6 +32,26 @@ def crear_interfaz_inicio(ventana):
     ventana.blit(texto_boton, texto_boton_rect)
 
     return boton_start
+
+def crear_interfaz_perder(ventana):
+    fuente = pygame.font.Font(None, 36)
+    texto = fuente.render("¡Perdiste! ¿Qué deseas hacer?", True, (255, 255, 255))
+    texto_rect = texto.get_rect(center=(ventana.get_width() // 2, ventana.get_height() // 2 - 50))
+    ventana.blit(texto, texto_rect)
+
+    boton_volver_a_jugar = pygame.Rect(400, 300, 200, 50)
+    pygame.draw.rect(ventana, (0, 255, 0), boton_volver_a_jugar)
+    texto_volver_a_jugar = fuente.render("Volver a Jugar", True, (255, 255, 255))
+    texto_volver_a_jugar_rect = texto_volver_a_jugar.get_rect(center=boton_volver_a_jugar.center)
+    ventana.blit(texto_volver_a_jugar, texto_volver_a_jugar_rect)
+
+    boton_salir = pygame.Rect(400, 400, 200, 50)
+    pygame.draw.rect(ventana, (255, 0, 0), boton_salir)
+    texto_salir = fuente.render("Salir", True, (255, 255, 255))
+    texto_salir_rect = texto_salir.get_rect(center=boton_salir.center)
+    ventana.blit(texto_salir, texto_salir_rect)
+
+    return boton_volver_a_jugar, boton_salir
 
 
 pygame.init()
@@ -127,6 +148,26 @@ while jugando:
     if colisiones_con_obstaculos >= 3:  
         print("¡Perdiste! Demasiadas colisiones con obstáculos.")
         jugando = False
+        ventana.fill(negro)
+        boton_volver_a_jugar, boton_salir = crear_interfaz_perder(ventana)
+        pygame.display.flip()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if boton_volver_a_jugar.collidepoint(event.pos):
+                        jugando = True
+                        colisiones_con_obstaculos = 0
+                        tiempo_inmunidad = 0
+                        for obstaculo in obstaculos:
+                            obstaculo.rect.x = random.randint(0, ancho - obstaculo.rect.width)
+                            obstaculo.rect.y = random.randint(0, altura - obstaculo.rect.height)
+                        break
+                    elif boton_salir.collidepoint(event.pos):
+                        pygame.quit()
+                        sys.exit()
 
     if nave.detectar_colision(otro_objeto):
         print("¡Llegaste al objetivo final!")
