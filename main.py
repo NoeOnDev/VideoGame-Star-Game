@@ -1,9 +1,10 @@
 import pygame
-import random
 import sys
 
 class ObjetoJuego:
     def __init__(self, x, y, width, height, color=None):
+        self.x_inicial = x
+        self.y_inicial = y
         self.rect = pygame.Rect(x, y, width, height)
         self.superficie = pygame.Surface((width, height), pygame.SRCALPHA)
         if color:
@@ -18,6 +19,10 @@ class ObjetoJuego:
 
     def detectar_colision(self, otro_objeto):
         return self.rect.colliderect(otro_objeto.rect)
+
+    def reiniciar_posicion(self):
+        self.rect.x = self.x_inicial
+        self.rect.y = self.y_inicial
 
 def crear_interfaz_inicio(ventana):
     fuente = pygame.font.Font(None, 36)
@@ -165,10 +170,8 @@ while jugando:
                         jugando = True
                         colisiones_con_obstaculos = 0
                         tiempo_inmunidad = 0
-                        for obstaculo in obstaculos:
-                            obstaculo.rect.x = random.randint(0, ancho - obstaculo.rect.width)
-                            obstaculo.rect.y = random.randint(0, altura - obstaculo.rect.height)
                         volver_a_jugar = True
+                        nave.reiniciar_posicion()
                     elif boton_salir.collidepoint(event.pos):
                         pygame.quit()
                         sys.exit()
