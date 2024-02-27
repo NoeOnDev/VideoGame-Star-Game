@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 class ObjetoJuego:
     def __init__(self, x, y, width, height, color=None):
@@ -17,6 +18,20 @@ class ObjetoJuego:
     def detectar_colision(self, otro_objeto):
         return self.rect.colliderect(otro_objeto.rect)
 
+def crear_interfaz_inicio(ventana):
+    fuente = pygame.font.Font(None, 36)
+    texto = fuente.render("Presiona 'Start' para comenzar", True, (255, 255, 255))
+    texto_rect = texto.get_rect(center=ventana.get_rect().center)
+    ventana.blit(texto, texto_rect)
+
+    boton_start = pygame.Rect(400, 300, 200, 50)
+    pygame.draw.rect(ventana, (0, 255, 0), boton_start)
+    texto_boton = fuente.render("Start", True, (255, 255, 255))
+    texto_boton_rect = texto_boton.get_rect(center=boton_start.center)
+    ventana.blit(texto_boton, texto_boton_rect)
+
+    return boton_start
+
 pygame.init()
 pygame.mixer.init()
 
@@ -30,7 +45,6 @@ verde = (0, 255, 0)
 blanco = (255, 255, 255)
 
 nave = ObjetoJuego(50, altura - 100, 70, 70, azul)
-
 otro_objeto = ObjetoJuego(ancho - 100, 50, 50, 50, blanco)
 
 obstaculos = [ObjetoJuego(400, 100, 50, 50, verde),
@@ -45,7 +59,6 @@ velocidad = 2
 reloj = pygame.time.Clock()
 
 sonido_colision = pygame.mixer.Sound('sonido_colision.wav')
-
 pygame.mixer.music.load('musica_fondo.mp3')
 pygame.mixer.music.play(-1)
 
@@ -53,11 +66,27 @@ colisiones_con_obstaculos = 0
 tiempo_inmunidad = 0
 duración_inmunidad = 1
 
-corriendo = True
-while corriendo:
+mostrar_interfaz_inicio = True
+jugando = False
+
+while mostrar_interfaz_inicio:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
-            corriendo = False
+            pygame.quit()
+            sys.exit()
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+            if boton_start.collidepoint(evento.pos):
+                mostrar_interfaz_inicio = False
+                jugando = True
+
+    ventana.fill(negro)
+    boton_start = crear_interfaz_inicio(ventana)
+    pygame.display.flip()
+
+while jugando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            jugando = False
 
     teclas = pygame.key.get_pressed()
     if teclas[pygame.K_UP] and nave.rect.top > 0:
