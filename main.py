@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 # entities.py
 class Player:
@@ -14,9 +15,40 @@ class Player:
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
 
 # main.py
-def main ():
+def main_menu(win):
+    menu_run = True
+    title_font = pygame.font.Font(None, 70)
+    button_font = pygame.font.Font(None, 50)
+    title_text = title_font.render('Space', True, (255, 255, 255))
+    start_button = pygame.Rect(350, 250, 200, 50)
+
+    while menu_run:
+        win.fill((0, 0, 0))
+        mx, my = pygame.mouse.get_pos()
+
+        win.blit(title_text, (325, 100))
+
+        pygame.draw.rect(win, (0, 255, 0), start_button)  # Dibuja un botón verde
+        button_text = button_font.render('Start', True, (255, 255, 255))
+        win.blit(button_text, (start_button.x + 50, start_button.y + 10))
+
+        click = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+                    
+        if start_button.collidepoint((mx, my)) and click:
+            menu_run = False
+
+        pygame.display.update()
+        
+def main(win):
     pygame.init()
-    win = pygame.display.set_mode((850, 531))
+    
     player = Player()
     clock = pygame.time.Clock()
     background = pygame.image.load('./src/img/space.jpg')
@@ -43,8 +75,12 @@ def main ():
         pygame.display.update()
         
     pygame.quit()
+
 if __name__ == "__main__":
-    main()
+    pygame.init()
+    win = pygame.display.set_mode((850, 531))
+    main_menu(win)
+    main(win)
 
 # render.py
 
