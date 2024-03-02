@@ -9,26 +9,10 @@ import sys
 
 # audio.py
 
-# gui.py
-
 # scenes.py
 
-# entities.py
-class Player:
-    def __init__(self):
-        self.x = 100
-        self.y = 100
-        self.width = 50
-        self.height = 50
-        self.color = (0, 0, 255)
-        self.vel = 2
-    
-    def draw(self, window):
-        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
-
-# main.py
-def home(win):
-    menu_run = True
+# gui.py
+def draw_home_screen(win):
     win_width, win_height = win.get_size()
     background = pygame.image.load('./src/img/home.jpg')
     background = pygame.transform.scale(background, (win_width, win_height))
@@ -41,6 +25,7 @@ def home(win):
     button_width, button_height = 200, 50
     start_button = pygame.Rect(win_width / 2 - button_width / 2, win_height / 2 + 10, button_width, button_height)
 
+    menu_run = True
     while menu_run:
         win.blit(background, (0, 0))
 
@@ -66,14 +51,26 @@ def home(win):
             menu_run = False
 
         pygame.display.update()
-        
-def main(win):
-    pygame.init()
+
+# entities.py
+class Player:
+    def __init__(self):
+        self.x = 100
+        self.y = 100
+        self.width = 50
+        self.height = 50
+        self.color = (0, 0, 255)
+        self.vel = 2
     
+    def draw(self, window):
+        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
+
+# main.py
+def game_loop(win):
     player = Player()
     clock = pygame.time.Clock()
     background = pygame.image.load('./src/img/space.jpg')
-    
+
     run = True
     while run:
         clock.tick(60)
@@ -97,8 +94,11 @@ def main(win):
         
     pygame.quit()
 
-if __name__ == "__main__":
+def main():
     pygame.init()
     win = pygame.display.set_mode((850, 531))
-    home(win)
-    main(win)
+    draw_home_screen(win)
+    game_loop(win)
+
+if __name__ == "__main__":
+    main()
