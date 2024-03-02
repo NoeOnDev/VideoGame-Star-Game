@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # render.py
 
@@ -64,12 +65,41 @@ class Player:
     
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
+        
+class Enemy:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = 40
+        self.height = 40
+        self.color = (255, 0, 0)
+        self.vel = 3
+        self.direction_x = 1  
+        self.direction_y = 1  
 
+    def draw(self, window):
+        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
+
+    def move(self):
+        self.x += self.vel * self.direction_x
+        self.y += self.vel * self.direction_y
+
+    def check_boundary_collision(self, window_width, window_height):
+        if self.x <= 0 or self.x + self.width >= window_width:
+            self.direction_x *= -1
+        if self.y <= 0 or self.y + self.height >= window_height:
+            self.direction_y *= -1
+            
 # main.py
 def game_loop(win):
     player = Player()
     clock = pygame.time.Clock()
     background = pygame.image.load('./src/img/space.jpg')
+
+    enemies = []
+    for i in range(12):
+        enemy = Enemy(random.randint(0, 800), random.randint(0, 500))
+        enemies.append(enemy)
 
     run = True
     while run:
@@ -89,10 +119,18 @@ def game_loop(win):
             player.y += player.vel
         
         win.blit(background, (0, 0))
+
+        for enemy in enemies:
+            enemy.move()
+            enemy.check_boundary_collision(850, 531)
+            enemy.draw(win)
+
         player.draw(win)
+
         pygame.display.update()
         
     pygame.quit()
+
 
 def main():
     pygame.init()
