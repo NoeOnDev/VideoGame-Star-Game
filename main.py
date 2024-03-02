@@ -16,11 +16,14 @@ class Player:
 # main.py
 def main ():
     pygame.init()
-    win = pygame.display.set_mode((1000, 800))
+    win = pygame.display.set_mode((850, 531))
     player = Player()
+    clock = pygame.time.Clock()
+    background = pygame.image.load('./src/img/space.jpg')
     
     run = True
     while run:
+        clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -28,14 +31,14 @@ def main ():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player.x - player.vel > 0:
             player.x -= player.vel
-        if keys[pygame.K_RIGHT] and player.x + player.vel < 1000 - player.width:
+        if keys[pygame.K_RIGHT] and player.x + player.vel < 850 - player.width:
             player.x += player.vel
         if keys[pygame.K_UP] and player.y - player.vel > 0:
             player.y -= player.vel
-        if keys[pygame.K_DOWN] and player.y + player.vel < 800 - player.height:
+        if keys[pygame.K_DOWN] and player.y + player.vel < 531 - player.height:
             player.y += player.vel
         
-        win.fill((0, 0, 0))
+        win.blit(background, (0, 0))
         player.draw(win)
         pygame.display.update()
         
