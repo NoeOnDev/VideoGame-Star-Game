@@ -1,6 +1,18 @@
 import pygame
 import sys
 
+# render.py
+
+# input.py
+
+# physics.py
+
+# audio.py
+
+# gui.py
+
+# scenes.py
+
 # entities.py
 class Player:
     def __init__(self):
@@ -15,19 +27,23 @@ class Player:
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
 
 # main.py
-def main_menu(win):
+def home(win):
     menu_run = True
     win_width, win_height = win.get_size()
+    background = pygame.image.load('./src/img/home.jpg')
+    background = pygame.transform.scale(background, (win_width, win_height))
+
     title_font = pygame.font.Font(None, 70)
     button_font = pygame.font.Font(None, 50)
-    title_text = title_font.render('Space', True, (255, 255, 255))
-    title_text_rect = title_text.get_rect(center=(win_width / 2, win_height / 2 - 50))  
+    title_text = title_font.render('Space Game', True, (255, 255, 255))
+    title_text_rect = title_text.get_rect(center=(win_width / 2, win_height / 2 - 50))
     
     button_width, button_height = 200, 50
-    start_button = pygame.Rect(win_width / 2 - button_width / 2, win_height / 2 + 10, button_width, button_height)  
+    start_button = pygame.Rect(win_width / 2 - button_width / 2, win_height / 2 + 10, button_width, button_height)
 
     while menu_run:
-        win.fill((0, 0, 0))
+        win.blit(background, (0, 0))
+
         mx, my = pygame.mouse.get_pos()
 
         win.blit(title_text, title_text_rect)
@@ -84,17 +100,5 @@ def main(win):
 if __name__ == "__main__":
     pygame.init()
     win = pygame.display.set_mode((850, 531))
-    main_menu(win)
+    home(win)
     main(win)
-
-# render.py
-
-# input.py
-
-# physics.py
-
-# audio.py
-
-# gui.py
-
-# scenes.py
