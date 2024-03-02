@@ -9,7 +9,7 @@ class Player:
         self.width = 50
         self.height = 50
         self.color = (0, 0, 255)
-        self.vel = 3
+        self.vel = 2
     
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
@@ -17,20 +17,25 @@ class Player:
 # main.py
 def main_menu(win):
     menu_run = True
+    win_width, win_height = win.get_size()
     title_font = pygame.font.Font(None, 70)
     button_font = pygame.font.Font(None, 50)
     title_text = title_font.render('Space', True, (255, 255, 255))
-    start_button = pygame.Rect(350, 250, 200, 50)
+    title_text_rect = title_text.get_rect(center=(win_width / 2, win_height / 2 - 50))  
+    
+    button_width, button_height = 200, 50
+    start_button = pygame.Rect(win_width / 2 - button_width / 2, win_height / 2 + 10, button_width, button_height)  
 
     while menu_run:
         win.fill((0, 0, 0))
         mx, my = pygame.mouse.get_pos()
 
-        win.blit(title_text, (325, 100))
+        win.blit(title_text, title_text_rect)
 
-        pygame.draw.rect(win, (0, 255, 0), start_button)  # Dibuja un botón verde
+        pygame.draw.rect(win, (0, 255, 0), start_button)
         button_text = button_font.render('Start', True, (255, 255, 255))
-        win.blit(button_text, (start_button.x + 50, start_button.y + 10))
+        button_text_rect = button_text.get_rect(center=start_button.center)
+        win.blit(button_text, button_text_rect)
 
         click = False
         for event in pygame.event.get():
