@@ -50,17 +50,36 @@ class HomeScreen:
             pygame.display.update()
 
 # entities.py
+class CheckPoint:
+    def __init__(self, win):
+        self.win = win
+        self.width = 50
+        self.height = 50
+        self.color = (0, 255, 0)
+        self.x = self.win.get_width() - self.width - 10
+        self.y = self.win.get_height() - self.height - 10
+
+    def draw(self):
+        pygame.draw.rect(self.win, self.color, (self.x, self.y, self.width, self.height))
+
+
 class Player:
-    def __init__(self):
-        self.x = 100
-        self.y = 100
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
         self.width = 50
         self.height = 50
         self.color = (0, 0, 255)
         self.vel = 2
-    
+
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
+
+    def check_collision(self, checkpoint):
+        return (self.x < checkpoint.x + checkpoint.width and
+                self.x + self.width > checkpoint.x and
+                self.y < checkpoint.y + checkpoint.height and
+                self.y + self.height > checkpoint.y)
 
 def relocate_enemies(enemies):
     min_distance = 150 
@@ -116,15 +135,24 @@ class Enemy:
 
 # main.py
 def game_loop(win):
-    player = Player()
+    player_width, player_height = 50, 50
+    player_x = 10
+    player_y = 10
+    player = Player(player_x, player_y)
+    checkpoint = CheckPoint(win)
+
     clock = pygame.time.Clock()
     background = pygame.image.load('./src/img/space.jpg')
     enemies = []
     for i in range(12):
-        enemy = Enemy(random.randint(0, 800), random.randint(0, 500))
+        enemy_x = random.randint(0, win.get_width() - player_width)
+        enemy_y = random.randint(0, win.get_height() - player_height)
+        while (abs(enemy_x - player_x) < player_width + 20 and abs(enemy_y - player_y) < player_height + 20) or \
+              (abs(enemy_x - checkpoint.x) < checkpoint.width + 20 and abs(enemy_y - checkpoint.y) < checkpoint.height + 20):
+            enemy_x = random.randint(0, win.get_width() - player_width)
+            enemy_y = random.randint(0, win.get_height() - player_height)
+        enemy = Enemy(enemy_x, enemy_y)
         enemies.append(enemy)
-
-    relocate_enemies(enemies)
 
     run = True
     while run:
@@ -135,11 +163,11 @@ def game_loop(win):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player.x - player.vel > 0:
             player.x -= player.vel
-        if keys[pygame.K_RIGHT] and player.x + player.vel < 850 - player.width:
+        if keys[pygame.K_RIGHT] and player.x + player.vel < win.get_width() - player.width:
             player.x += player.vel
         if keys[pygame.K_UP] and player.y - player.vel > 0:
             player.y -= player.vel
-        if keys[pygame.K_DOWN] and player.y + player.vel < 531 - player.height:
+        if keys[pygame.K_DOWN] and player.y + player.vel < win.get_height() - player.height:
             player.y += player.vel
         win.blit(background, (0, 0))
 
@@ -148,24 +176,24 @@ def game_loop(win):
 
         for enemy in enemies:
             enemy.move()
-            enemy.check_boundary_collision(850, 531)
+            enemy.check_boundary_collision(win.get_width(), win.get_height())
             enemy.draw(win)
 
         player.draw(win)
+        checkpoint.draw()
+
+        if player.check_collision(checkpoint):
+            run = False
+
         pygame.display.update()
 
-pygame.quit()
-
-def move_and_draw_enemy(enemy, win):
-    enemy.move()
-    enemy.check_boundary_collision(850, 531)
-    enemy.draw(win)
 
 def main():
     pygame.init()
     win = pygame.display.set_mode((850, 531))
     home_screen = HomeScreen(win)
     home_screen.draw()
+
     game_loop(win)
 
 if __name__ == "__main__":
