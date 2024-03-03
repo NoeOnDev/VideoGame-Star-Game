@@ -63,7 +63,7 @@ class Player:
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
 
 def relocate_enemies(enemies):
-    min_distance = 150
+    min_distance = 150 
     for enemy in enemies:
         for other_enemy in enemies:
             if enemy != other_enemy:
