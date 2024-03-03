@@ -86,7 +86,21 @@ class Enemy:
         if self.y <= 0 or self.y + self.height >= window_height:
             self.direction_y *= -1
 
-            
+    def check_enemy_collision(self, enemies):
+        for enemy in enemies:
+            if enemy != self:
+                if (self.x < enemy.x + enemy.width and
+                    self.x + self.width > enemy.x and
+                    self.y < enemy.y + enemy.height and
+                    self.y + self.height > enemy.y):
+                    
+                    self.direction_x *= -1
+                    self.direction_y *= -1
+                    enemy.direction_x *= -1
+                    enemy.direction_y *= -1
+                    break
+
+
 # main.py
 def game_loop(win):
     player = Player()
@@ -114,18 +128,18 @@ def game_loop(win):
             player.y += player.vel
         win.blit(background, (0, 0))
 
-        threads = []
         for enemy in enemies:
-            t = threading.Thread(target=move_and_draw_enemy, args=(enemy, win))
-            t.start()
-            threads.append(t)
-        for t in threads:
-            t.join()
+            enemy.check_enemy_collision(enemies)
+
+        for enemy in enemies:
+            enemy.move()
+            enemy.check_boundary_collision(850, 531)
+            enemy.draw(win)
 
         player.draw(win)
         pygame.display.update()
 
-    pygame.quit()
+pygame.quit()
 
 def move_and_draw_enemy(enemy, win):
     enemy.move()
