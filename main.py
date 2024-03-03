@@ -62,6 +62,19 @@ class Player:
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
 
+def relocate_enemies(enemies):
+    min_distance = 150
+    for enemy in enemies:
+        for other_enemy in enemies:
+            if enemy != other_enemy:
+                distance = ((enemy.x - other_enemy.x) ** 2 + (enemy.y - other_enemy.y) ** 2) ** 0.5
+                if distance < min_distance:
+                    enemy.x = random.randint(0, 800)
+                    enemy.y = random.randint(0, 500)
+                    relocate_enemies(enemies)
+                    return
+
+
 class Enemy:
     def __init__(self, x, y):
         self.x = x
@@ -110,6 +123,8 @@ def game_loop(win):
     for i in range(12):
         enemy = Enemy(random.randint(0, 800), random.randint(0, 500))
         enemies.append(enemy)
+
+    relocate_enemies(enemies)
 
     run = True
     while run:
