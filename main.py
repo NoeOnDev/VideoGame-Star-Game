@@ -7,6 +7,8 @@ from pygame.locals import *
 # Constantes
 WINDOW_WIDTH = 850
 WINDOW_HEIGHT = 531
+BASE_WIDTH = 100
+BASE_HEIGHT = 100
 FPS = 60
 
 # Entidades
@@ -30,6 +32,15 @@ class Player:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
+class Base:
+    def __init__(self, image_path, position):
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = position
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
 class Asteroid:
     pass
 
@@ -37,9 +48,34 @@ class Enemy:
     pass
 
 # Vistas
-class GameView:
-    pass
+class PlayButton:
+    def __init__(self, image_path, position):
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.center = position
 
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def is_clicked(self, event):
+        if event.type == MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
+
+class MenuView:
+    def __init__(self, screen):
+        self.screen = screen
+        self.play_button = PlayButton('./src/img/play_button.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+
+    def draw(self):
+        self.play_button.draw(self.screen)
+
+    def handle_event(self, event):
+        if self.play_button.is_clicked(event):
+            return True
+        return False
+    
 # Hilos
 class PlayerThread(threading.Thread):
     pass
@@ -80,7 +116,8 @@ def main():
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
-    player = Player('./src/img/nave.png', 3, (WINDOW_WIDTH // 20, WINDOW_HEIGHT // 20))
+    player = Player('./src/img/nave.png', 2, (20, 20))
+    base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
     background = pygame.image.load('./src/img/space.jpg')
     background = pygame.transform.scale(background, (WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -97,6 +134,10 @@ def main():
         screen.blit(background, (0, 0))
 
         player.draw(screen)
+        base.draw(screen)
+
+        if player.rect.colliderect(base.rect):
+            print("¡Nivel completado!")
 
         pygame.display.flip()
         clock.tick(FPS)
