@@ -143,12 +143,12 @@ class LoserView:
             return 'retry'
         elif self.exit_button.is_clicked(event):
             return 'exit'
-        return None
-    
+        return True
+
 # Hilos
 class PlayerThread(threading.Thread):
     def __init__(self, player, keys, window_width, window_height):
-        super().__init__()
+        threading.Thread.__init__(self)
         self.player = player
         self.keys = keys
         self.window_width = window_width
@@ -156,6 +156,23 @@ class PlayerThread(threading.Thread):
 
     def run(self):
         self.player.move(self.keys, self.window_width, self.window_height)
+
+class AsteroidThread(threading.Thread):
+    def __init__(self, asteroid):
+        threading.Thread.__init__(self)
+        self.asteroid = asteroid
+
+    def run(self):
+        self.asteroid.move()
+
+class AsteroidsThread(threading.Thread):
+    def __init__(self, asteroids):
+        threading.Thread.__init__(self)
+        self.asteroids = asteroids
+
+    def run(self):
+        for asteroid in self.asteroids:
+            asteroid.move()
 
 class EnemyThread(threading.Thread):
     def __init__(self, enemy, player_position):
@@ -165,14 +182,6 @@ class EnemyThread(threading.Thread):
 
     def run(self):
         self.enemy.move(self.player_position)
-
-class AsteroidThread(threading.Thread):
-    def __init__(self, asteroid):
-        super().__init__()
-        self.asteroid = asteroid
-
-    def run(self):
-        self.asteroid.move()
 
 class MusicThread(threading.Thread):
     def __init__(self, music_file):
@@ -184,28 +193,15 @@ class MusicThread(threading.Thread):
         pygame.mixer.music.load(self.music_file)
         pygame.mixer.music.play(-1) 
         
-class PlayerThread(threading.Thread):
-    pass
-
-class EnemyThread(threading.Thread):
-    pass
-
-class AsteroidThread(threading.Thread):
-    pass
-
-class AudioThread(threading.Thread):
-    pass
-
-class GraphicsThread(threading.Thread):
-    pass
-
-class EnemyAI(threading.Thread):
-    pass
-
 # Barreras
-start_level_barrier = threading.Barrier(12)
 start_music_barrier = threading.Barrier(2)
+start_level_barrier = threading.Barrier(12)
 update_score_barrier = threading.Barrier(2)
+
+# Notificaciones
+collision_condition = threading.Condition()
+direction_change_condition = threading.Condition()
+shot_sound_condition = threading.Condition()
 
 # Semáforos
 score_semaphore = threading.Semaphore(1)
@@ -247,13 +243,23 @@ def main():
     pygame.mixer.music.stop()
     game_music_thread = MusicThread('./src/sound/sound_play.mp3')
     game_music_thread.start()
-    
     player = Player('./src/img/nave.png', 1, (20, 20))
     asteroids = [Asteroid('./src/img/asteroide.png', 4) for i in range(9)]
     base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
+    # Crear e iniciar hilos
+    keys = pygame.key.get_pressed()
+    player_thread = PlayerThread(player, keys, WINDOW_WIDTH, WINDOW_HEIGHT)
+    asteroid_thread = AsteroidThread(asteroids[0])  # o el asteroide que quieras mover
+
+    player_thread.start()
+    asteroid_thread.start()
+
     background = pygame.image.load('./src/img/space.jpg')
     background = pygame.transform.scale(background, (WINDOW_WIDTH, WINDOW_HEIGHT))
+    
+    player_thread.join()
+    asteroid_thread.join()
 
     while True:
         for event in pygame.event.get():
