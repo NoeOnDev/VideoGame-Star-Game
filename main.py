@@ -66,6 +66,9 @@ def main():
     spaceship = pygame.image.load('./src/img/nave.png')
     spaceship_rect = spaceship.get_rect()
     spaceship_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+
+    background = pygame.image.load('./src/img/space.jpg')
+    background = pygame.transform.scale(background, (WINDOW_WIDTH, WINDOW_HEIGHT))
  
     while True:
         for event in pygame.event.get():
@@ -73,7 +76,7 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
 
         screen.blit(spaceship, spaceship_rect)
 
