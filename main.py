@@ -66,7 +66,7 @@ class PlayButton:
 class MenuView:
     def __init__(self, screen):
         self.screen = screen
-        self.play_button = PlayButton('./src/img/play_button.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+        self.play_button = PlayButton('./src/img/play.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
 
     def draw(self):
         self.play_button.draw(self.screen)
