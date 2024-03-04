@@ -125,8 +125,8 @@ class LoserView:
         self.screen = screen
         self.background = pygame.image.load('./src/img/space.jpg')
         self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
-        self.retry_button = PlayButton('./src/img/play.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
-        self.exit_button = PlayButton('./src/img/play.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 100))
+        self.retry_button = PlayButton('./src/img/retry.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+        self.exit_button = PlayButton('./src/img/quit.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 100))
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))
