@@ -20,6 +20,13 @@ class Player:
         self.rect = self.image.get_rect()
         self.rect.center = initial_position
         self.speed = speed
+        self.lives = 3
+        
+    def lose_life(self):
+        self.lives -= 1
+        if self.lives == 0:
+            print("¡El jugador ha perdido!")
+            return self.lives
 
     def move(self, keys, window_width, window_height):
         if keys[K_UP] and self.rect.top > 0:
@@ -61,7 +68,6 @@ class Asteroid:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
     
-
 class Enemy:
     def __init__(self, image_path, speed, initial_position):
         self.image = pygame.image.load(image_path)
@@ -113,6 +119,26 @@ class MenuView:
         if self.play_button.is_clicked(event):
             return True
         return False
+
+class LoserView:
+    def __init__(self, screen):
+        self.screen = screen
+        self.background = pygame.image.load('./src/img/space.jpg')
+        self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.retry_button = PlayButton('./src/img/play.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+        self.exit_button = PlayButton('./src/img/play.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 100))
+
+    def draw(self):
+        self.screen.blit(self.background, (0, 0))
+        self.retry_button.draw(self.screen)
+        self.exit_button.draw(self.screen)
+
+    def handle_event(self, event):
+        if self.retry_button.is_clicked(event):
+            return 'retry'
+        elif self.exit_button.is_clicked(event):
+            return 'exit'
+        return None
     
 # Hilos
 class PlayerThread(threading.Thread):
@@ -239,6 +265,22 @@ def main():
         for asteroid in asteroids:
             if player.rect.colliderect(asteroid.rect):
                 print("¡El jugador ha chocado con un asteroide!")
+                if player.lose_life() == 0:
+                    loser_view = LoserView(screen)
+                    game_over = False
+                    while not game_over:
+                        for event in pygame.event.get():
+                            if event.type == QUIT:
+                                pygame.quit()
+                                sys.exit()
+                            action = loser_view.handle_event(event)
+                            if action == 'retry':
+                                main()
+                            elif action == 'exit':
+                                pygame.quit()
+                                sys.exit()
+                        loser_view.draw()
+                        pygame.display.flip()
 
         keys = pygame.key.get_pressed()
         player.move(keys, WINDOW_WIDTH, WINDOW_HEIGHT)
