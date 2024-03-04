@@ -44,14 +44,19 @@ class Base:
         screen.blit(self.image, self.rect)
 
 class Asteroid:
-    def __init__(self, image_path, speed, initial_position):
+    def __init__(self, image_path, speed):
         self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect()
-        self.rect.center = initial_position
         self.speed = speed
+        self.reset_position()
+
+    def reset_position(self):
+        self.rect.center = (random.randint(WINDOW_WIDTH, WINDOW_WIDTH + 200), random.randint(0, WINDOW_HEIGHT))
 
     def move(self):
         self.rect.x -= self.speed
+        if self.rect.right < 0:
+            self.reset_position()
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -211,9 +216,9 @@ def main():
     pygame.mixer.music.stop()
     game_music_thread = MusicThread('./src/sound/sound_play.mp3')
     game_music_thread.start()
-
-    player = Player('./src/img/nave.png', 2, (20, 20))
-    asteroids = [Asteroid('./src/img/asteroide.png', 2, (WINDOW_WIDTH, generate_asteroid_y_position())) for i in range(9)]
+    
+    player = Player('./src/img/nave.png', 1, (20, 20))
+    asteroids = [Asteroid('./src/img/asteroide.png', 4) for i in range(9)]
     base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
     background = pygame.image.load('./src/img/space.jpg')
