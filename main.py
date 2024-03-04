@@ -1,6 +1,7 @@
 import pygame
 import sys
 import threading
+import random
 import queue
 import pygame.mixer
 from pygame.locals import *
@@ -54,6 +55,7 @@ class Asteroid:
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+    
 
 class Enemy:
     def __init__(self, image_path, speed, initial_position):
@@ -179,6 +181,9 @@ new_level_event = threading.Event()
 game_over_event = threading.Event()
 shot_fired_event = threading.Event()
 
+def generate_asteroid_y_position():
+        return random.randint(0, WINDOW_HEIGHT)
+
 # Main
 def main():
     pygame.init()
@@ -208,6 +213,7 @@ def main():
     game_music_thread.start()
 
     player = Player('./src/img/nave.png', 2, (20, 20))
+    asteroids = [Asteroid('./src/img/asteroide.png', 2, (WINDOW_WIDTH, generate_asteroid_y_position())) for i in range(9)]
     base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
     background = pygame.image.load('./src/img/space.jpg')
@@ -219,10 +225,18 @@ def main():
                 pygame.quit()
                 sys.exit()
 
+        screen.blit(background, (0, 0))
+
+        for asteroid in asteroids:
+            asteroid.move()
+            asteroid.draw(screen)
+
+        for asteroid in asteroids:
+            if player.rect.colliderect(asteroid.rect):
+                print("¡El jugador ha chocado con un asteroide!")
+
         keys = pygame.key.get_pressed()
         player.move(keys, WINDOW_WIDTH, WINDOW_HEIGHT)
-
-        screen.blit(background, (0, 0))
 
         player.draw(screen)
         base.draw(screen)
