@@ -5,8 +5,8 @@ import queue
 from pygame.locals import *
 
 # Constantes
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH = 850
+WINDOW_HEIGHT = 531
 FPS = 60
 
 # Entidades
@@ -43,9 +43,9 @@ class EnemyAI(threading.Thread):
     pass
 
 # Barreras
-start_level_barrier = threading.Barrier(12)  # 10 foreground threads + 2 background threads
-start_music_barrier = threading.Barrier(2)  # Audio thread + main thread
-update_score_barrier = threading.Barrier(2)  # Game logic thread + graphics thread
+start_level_barrier = threading.Barrier(12)
+start_music_barrier = threading.Barrier(2)
+update_score_barrier = threading.Barrier(2)
 
 # Semáforos
 score_semaphore = threading.Semaphore(1)
@@ -59,4 +59,26 @@ shot_fired_event = threading.Event()
 
 # Main
 def main():
-    pass
+    pygame.init()
+    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    clock = pygame.time.Clock()
+
+    spaceship = pygame.image.load('./src/img/nave.png')
+    spaceship_rect = spaceship.get_rect()
+    spaceship_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+ 
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+        screen.fill((0, 0, 0))
+
+        screen.blit(spaceship, spaceship_rect)
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
+if __name__ == "__main__":
+    main()
