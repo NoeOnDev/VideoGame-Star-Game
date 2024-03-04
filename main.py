@@ -22,12 +22,16 @@ class Player:
         self.rect.center = initial_position
         self.speed = speed
         self.lives = 3
+        self.immunity_time = 0 
         
     def lose_life(self):
-        self.lives -= 1
-        if self.lives == 0:
-            print("¡El jugador ha perdido!")
-            return self.lives
+        current_time = time.time()
+        if current_time > self.immunity_time:
+            self.lives -= 1
+            self.immunity_time = current_time + 1
+            if self.lives == 0:
+                print("¡El jugador ha perdido!")
+                return self.lives
 
     def move(self, keys, window_width, window_height):
         if keys[K_UP] and self.rect.top > 0:
@@ -265,8 +269,9 @@ def main():
 
         for asteroid in asteroids:
             if player.rect.colliderect(asteroid.rect):
-                print("¡El jugador ha chocado con un asteroide!")
-                if player.lose_life() == 0:
+                player.lose_life()
+                if player.lives == 0:
+                        
                     loser_view = LoserView(screen)
                     game_over = False
                     while not game_over:
