@@ -66,9 +66,12 @@ class PlayButton:
 class MenuView:
     def __init__(self, screen):
         self.screen = screen
+        self.background = pygame.image.load('./src/img/home.jpg')
+        self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
         self.play_button = PlayButton('./src/img/play.png', (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
 
     def draw(self):
+        self.screen.blit(self.background, (0, 0))
         self.play_button.draw(self.screen)
 
     def handle_event(self, event):
