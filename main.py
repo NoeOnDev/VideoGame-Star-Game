@@ -152,20 +152,6 @@ def main():
     game_music_thread = MusicThread('./src/sound/sound_play.mp3')
     game_music_thread.start()
 
-    menu_view = MenuView(screen)
-    game_started = False
-
-    while not game_started:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-
-            game_started = menu_view.handle_event(event)
-
-        menu_view.draw()
-        pygame.display.flip()
-
     player = Player('./src/img/nave.png', 2, (20, 20))
     base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
