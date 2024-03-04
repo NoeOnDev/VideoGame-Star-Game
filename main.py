@@ -116,12 +116,26 @@ def main():
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
+    menu_view = MenuView(screen)
+    game_started = False
+
+    while not game_started:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+            game_started = menu_view.handle_event(event)
+
+        menu_view.draw()
+        pygame.display.flip()
+
     player = Player('./src/img/nave.png', 2, (20, 20))
     base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
     background = pygame.image.load('./src/img/space.jpg')
     background = pygame.transform.scale(background, (WINDOW_WIDTH, WINDOW_HEIGHT))
- 
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
