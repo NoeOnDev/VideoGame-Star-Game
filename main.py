@@ -2,6 +2,7 @@ import pygame
 import sys
 import threading
 import queue
+import pygame.mixer
 from pygame.locals import *
 
 # Constantes
@@ -80,6 +81,16 @@ class MenuView:
         return False
     
 # Hilos
+class MusicThread(threading.Thread):
+    def __init__(self, music_file):
+        super().__init__()
+        self.music_file = music_file
+
+    def run(self):
+        pygame.mixer.init()
+        pygame.mixer.music.load(self.music_file)
+        pygame.mixer.music.play(-1) 
+        
 class PlayerThread(threading.Thread):
     pass
 
@@ -118,6 +129,28 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
+
+    menu_music_thread = MusicThread('./src/sound/sound_main.mp3')
+    menu_music_thread.start()
+
+    menu_view = MenuView(screen)
+    game_started = False
+
+    while not game_started:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.mixer.music.stop()
+                pygame.quit()
+                sys.exit()
+
+            game_started = menu_view.handle_event(event)
+
+        menu_view.draw()
+        pygame.display.flip()
+
+    pygame.mixer.music.stop()
+    game_music_thread = MusicThread('./src/sound/sound_play.mp3')
+    game_music_thread.start()
 
     menu_view = MenuView(screen)
     game_started = False
