@@ -2,6 +2,7 @@ import pygame
 import sys
 import threading
 import random
+import time
 import queue
 import pygame.mixer
 from pygame.locals import *
@@ -290,6 +291,7 @@ def main():
 
         if player.rect.colliderect(base.rect):
             print("¡Nivel completado!")
+            main()
 
         pygame.display.flip()
         clock.tick(FPS)
