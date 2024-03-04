@@ -43,10 +43,37 @@ class Base:
         screen.blit(self.image, self.rect)
 
 class Asteroid:
-    pass
+    def __init__(self, image_path, speed, initial_position):
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.center = initial_position
+        self.speed = speed
+
+    def move(self):
+        self.rect.x -= self.speed
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
 
 class Enemy:
-    pass
+    def __init__(self, image_path, speed, initial_position):
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.center = initial_position
+        self.speed = speed
+
+    def move(self, player_position):
+        if self.rect.x < player_position[0]:
+            self.rect.x += self.speed
+        if self.rect.x > player_position[0]:
+            self.rect.x -= self.speed
+        if self.rect.y < player_position[1]:
+            self.rect.y += self.speed
+        if self.rect.y > player_position[1]:
+            self.rect.y -= self.speed
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
 
 # Vistas
 class PlayButton:
@@ -81,6 +108,34 @@ class MenuView:
         return False
     
 # Hilos
+class PlayerThread(threading.Thread):
+    def __init__(self, player, keys, window_width, window_height):
+        super().__init__()
+        self.player = player
+        self.keys = keys
+        self.window_width = window_width
+        self.window_height = window_height
+
+    def run(self):
+        self.player.move(self.keys, self.window_width, self.window_height)
+
+class EnemyThread(threading.Thread):
+    def __init__(self, enemy, player_position):
+        super().__init__()
+        self.enemy = enemy
+        self.player_position = player_position
+
+    def run(self):
+        self.enemy.move(self.player_position)
+
+class AsteroidThread(threading.Thread):
+    def __init__(self, asteroid):
+        super().__init__()
+        self.asteroid = asteroid
+
+    def run(self):
+        self.asteroid.move()
+
 class MusicThread(threading.Thread):
     def __init__(self, music_file):
         super().__init__()
