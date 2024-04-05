@@ -7,14 +7,12 @@ import queue
 import pygame.mixer
 from pygame.locals import *
 
-# Constantes
 WINDOW_WIDTH = 850
 WINDOW_HEIGHT = 531
 BASE_WIDTH = 100
 BASE_HEIGHT = 100
 FPS = 60
 
-# Entidades
 class Player:
     def __init__(self, image_path, speed, initial_position):
         self.image = pygame.image.load(image_path)
@@ -93,7 +91,6 @@ class Enemy:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
-# Vistas
 class PlayButton:
     def __init__(self, image_path, position):
         self.image = pygame.image.load(image_path)
@@ -145,7 +142,6 @@ class LoserView:
             return 'exit'
         return True
 
-# Hilos
 class PlayerThread(threading.Thread):
     def __init__(self, player, keys, window_width, window_height):
         threading.Thread.__init__(self)
@@ -193,22 +189,18 @@ class MusicThread(threading.Thread):
         pygame.mixer.music.load(self.music_file)
         pygame.mixer.music.play(-1) 
         
-# Barreras
 start_music_barrier = threading.Barrier(2)
 start_level_barrier = threading.Barrier(12)
 update_score_barrier = threading.Barrier(2)
 
-# Notificaciones
 collision_condition = threading.Condition()
 direction_change_condition = threading.Condition()
 shot_sound_condition = threading.Condition()
 
-# Semáforos
 score_semaphore = threading.Semaphore(1)
 enemy_list_semaphore = threading.Semaphore(1)
 player_position_semaphore = threading.Semaphore(1)
 
-# Eventos
 new_level_event = threading.Event()
 game_over_event = threading.Event()
 shot_fired_event = threading.Event()
@@ -216,7 +208,6 @@ shot_fired_event = threading.Event()
 def generate_asteroid_y_position():
         return random.randint(0, WINDOW_HEIGHT)
 
-# Main
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -247,10 +238,9 @@ def main():
     asteroids = [Asteroid('./src/img/asteroide.png', 4) for i in range(9)]
     base = Base('./src/img/base.png', (WINDOW_WIDTH - BASE_WIDTH, WINDOW_HEIGHT - BASE_HEIGHT))
 
-    # Crear e iniciar hilos
     keys = pygame.key.get_pressed()
     player_thread = PlayerThread(player, keys, WINDOW_WIDTH, WINDOW_HEIGHT)
-    asteroid_thread = AsteroidThread(asteroids[0])  # o el asteroide que quieras mover
+    asteroid_thread = AsteroidThread(asteroids[0])
 
     player_thread.start()
     asteroid_thread.start()
