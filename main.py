@@ -3,17 +3,17 @@ import sys
 
 pygame.init()
 
-window_width = 800
-window_height = 600
+window_main_width = 800
+window_main_height = 600
 
-screen = pygame.display.set_mode((window_width, window_height))
+screen = pygame.display.set_mode((window_main_width, window_main_height))
 
 start_button = pygame.image.load('./src/img/play.png')
 exit_button = pygame.image.load('./src/img/quit.png')
 
-start_button_x = window_width / 2 - start_button.get_width() / 2
-start_button_y = window_height / 2 - start_button.get_height() / 2
-exit_button_x = window_width / 2 - exit_button.get_width() / 2
+start_button_x = window_main_width / 2 - start_button.get_width() / 2
+start_button_y = window_main_height / 2 - start_button.get_height() / 2
+exit_button_x = window_main_width / 2 - exit_button.get_width() / 2
 exit_button_y = start_button_y + start_button.get_height() + 30
 
 screen.blit(start_button, (start_button_x, start_button_y))
