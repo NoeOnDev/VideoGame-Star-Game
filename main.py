@@ -11,7 +11,7 @@ screen = pygame.display.set_mode((window_main_width, window_main_height))
 background = pygame.image.load('./src/img/home.jpg')
 
 start_button_color = (92, 169, 63)
-exit_button_color = (207, 45, 45)
+exit_button_color = (193, 49, 49)
 border_color = (23, 23, 23)
 
 button_width = 150
