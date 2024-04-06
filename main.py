@@ -11,8 +11,8 @@ screen = pygame.display.set_mode((window_main_width, window_main_height))
 
 background = pygame.image.load('./src/img/home.jpg')
 
-start_button_color = (92, 169, 63)
-exit_button_color = (193, 49, 49)
+start_button_color = (0, 255, 19)
+exit_button_color = (255, 0, 0)
 volume_up_button_color = (255, 255, 0)
 volume_down_button_color = (255, 0, 0)
 border_color = (23, 23, 23)
