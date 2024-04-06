@@ -104,5 +104,5 @@ while True:
             elif volume_down_button_x <= x <= volume_down_button_x + button_volume_width and volume_down_button_y <= y <= volume_down_button_y + button_volume_height:
                 volume = pygame.mixer.music.get_volume()
                 pygame.mixer.music.set_volume(max(0, volume - 0.1))
-            elif mute_button_x <= x <= mute_button_x + button_volume_width and mute_button_y <= y <= mute_button_y + button_volume_height:  # Condición para el botón de silencio
+            elif mute_button_x <= x <= mute_button_x + button_volume_width and mute_button_y <= y <= mute_button_y + button_volume_height:
                 pygame.mixer.music.set_volume(0)
