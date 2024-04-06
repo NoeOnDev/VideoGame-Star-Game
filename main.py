@@ -20,8 +20,8 @@ volume_up_button_color = (255, 255, 0)
 volume_down_button_color = (255, 0, 0)
 border_color = (23, 23, 23)
 
-button_width = 200
-button_height = 70
+button_width = 150
+button_height = 60
 button_volume_width = 40
 button_volume_height = 40
 border_width = 5
@@ -32,14 +32,11 @@ start_button_y = window_main_height / 2 - button_height / 2
 exit_button_x = window_main_width / 2 - button_width / 2
 exit_button_y = start_button_y + button_height + 30
 
-volume_down_button_x = 5
-volume_down_button_y = window_main_height - button_volume_height -10
+volume_down_button_x = 0
+volume_down_button_y = window_main_height - button_volume_height
 
-volume_up_button_x = button_volume_width + 20
-volume_up_button_y = window_main_height - button_volume_height -10
-
-volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
-volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
+volume_up_button_x = button_volume_width + 10
+volume_up_button_y = window_main_height - button_volume_height
 
 screen.blit(background, (0, 0))
 
@@ -57,10 +54,12 @@ pygame.draw.rect(screen, volume_down_button_color, pygame.Rect(volume_down_butto
 
 font = pygame.font.Font(None, 40)
 
+
 start_text = font.render('Play', True, (0, 0, 0))
 exit_text = font.render('Exit', True, (0, 0, 0))
-volume_up_text = font.render('+', True, (0, 0, 0))
-volume_down_text = font.render('-', True, (0, 0, 0))
+
+volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
+volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
 
 game_name_font = pygame.font.Font(None, 72)
 game_name_text = game_name_font.render('My Star', True, (255, 255, 255))
