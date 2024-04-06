@@ -8,13 +8,13 @@ window_main_height = 501
 
 screen = pygame.display.set_mode((window_main_width, window_main_height))
 
-background = pygame.image.load('./src/img/background.png')
+background = pygame.image.load('./src/img/home.jpg')
 
 start_button = pygame.image.load('./src/img/play.png')
 exit_button = pygame.image.load('./src/img/quit.png')
 
 start_button = pygame.transform.scale(start_button, (150, 75))
-exit_button = pygame.transform.scale(exit_button, (130, 50))
+exit_button = pygame.transform.scale(exit_button, (150, 70))
 
 start_button_x = window_main_width / 2 - start_button.get_width() / 2
 start_button_y = window_main_height / 2 - start_button.get_height() / 2
