@@ -3,13 +3,21 @@ import sys
 
 pygame.init()
 
-screen = pygame.display.set_mode((800, 600))
+window_width = 800
+window_height = 600
+
+screen = pygame.display.set_mode((window_width, window_height))
 
 start_button = pygame.image.load('./src/img/play.png')
 exit_button = pygame.image.load('./src/img/quit.png')
 
-screen.blit(start_button, (200, 200))
-screen.blit(exit_button, (200, 300))
+start_button_x = window_width / 2 - start_button.get_width() / 2
+start_button_y = window_height / 2 - start_button.get_height() / 2
+exit_button_x = window_width / 2 - exit_button.get_width() / 2
+exit_button_y = start_button_y + start_button.get_height() + 30
+
+screen.blit(start_button, (start_button_x, start_button_y))
+screen.blit(exit_button, (exit_button_x, exit_button_y))
 
 pygame.display.flip()
 
@@ -20,8 +28,8 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            if 200 <= x <= 200 + start_button.get_width() and 200 <= y <= 200 + start_button.get_height():
+            if start_button_x <= x <= start_button_x + start_button.get_width() and start_button_y <= y <= start_button_y + start_button.get_height():
                 print("Iniciar juego")
-            elif 400 <= x <= 400 + exit_button.get_width() and 200 <= y <= 200 + exit_button.get_height():
+            elif exit_button_x <= x <= exit_button_x + exit_button.get_width() and exit_button_y <= y <= exit_button_y + exit_button.get_height():
                 pygame.quit()
                 sys.exit()
