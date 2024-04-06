@@ -4,27 +4,27 @@ import sys
 pygame.init()
 
 window_main_width = 800
-window_main_height = 501
+window_main_height = 470
 
 screen = pygame.display.set_mode((window_main_width, window_main_height))
 
 background = pygame.image.load('./src/img/home.jpg')
 
-start_button = pygame.image.load('./src/img/play.png')
-exit_button = pygame.image.load('./src/img/quit.png')
+start_button_color = (0, 255, 0)
+exit_button_color = (255, 0, 0)
 
-start_button = pygame.transform.scale(start_button, (150, 75))
-exit_button = pygame.transform.scale(exit_button, (150, 70))
+button_width = 150
+button_height = 70
 
-start_button_x = window_main_width / 2 - start_button.get_width() / 2
-start_button_y = window_main_height / 2 - start_button.get_height() / 2
-exit_button_x = window_main_width / 2 - exit_button.get_width() / 2
-exit_button_y = start_button_y + start_button.get_height() + 30
+start_button_x = window_main_width / 2 - button_width / 2
+start_button_y = window_main_height / 2 - button_height / 2
+exit_button_x = window_main_width / 2 - button_width / 2
+exit_button_y = start_button_y + button_height + 30
 
 screen.blit(background, (0, 0))
 
-screen.blit(start_button, (start_button_x, start_button_y))
-screen.blit(exit_button, (exit_button_x, exit_button_y))
+pygame.draw.rect(screen, start_button_color, pygame.Rect(start_button_x, start_button_y, button_width, button_height))
+pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
 
 pygame.display.flip()
 
@@ -35,8 +35,8 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            if start_button_x <= x <= start_button_x + start_button.get_width() and start_button_y <= y <= start_button_y + start_button.get_height():
+            if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                 print("Iniciar juego")
-            elif exit_button_x <= x <= exit_button_x + exit_button.get_width() and exit_button_y <= y <= exit_button_y + exit_button.get_height():
+            elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
                 pygame.quit()
                 sys.exit()
