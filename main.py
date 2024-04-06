@@ -26,6 +26,14 @@ screen.blit(background, (0, 0))
 pygame.draw.rect(screen, start_button_color, pygame.Rect(start_button_x, start_button_y, button_width, button_height))
 pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
 
+font = pygame.font.Font(None, 36)
+
+start_text = font.render('Iniciar', True, (0, 0, 0))
+exit_text = font.render('Salir', True, (0, 0, 0))
+
+screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
+screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
+
 pygame.display.flip()
 
 while True:
