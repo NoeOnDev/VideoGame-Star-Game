@@ -11,6 +11,9 @@ screen = pygame.display.set_mode((window_main_width, window_main_height))
 
 background = pygame.image.load('./src/img/home.jpg')
 
+volume_up_image = pygame.image.load('./src/img/volume_up.png')
+volume_down_image = pygame.image.load('./src/img/volume_down.png')
+
 start_button_color = (0, 255, 19)
 exit_button_color = (255, 0, 0)
 volume_up_button_color = (255, 255, 0)
@@ -25,6 +28,7 @@ border_width = 5
 
 start_button_x = window_main_width / 2 - button_width / 2
 start_button_y = window_main_height / 2 - button_height / 2
+
 exit_button_x = window_main_width / 2 - button_width / 2
 exit_button_y = start_button_y + button_height + 30
 
@@ -33,6 +37,9 @@ volume_down_button_y = window_main_height - button_volume_height -10
 
 volume_up_button_x = button_volume_width + 20
 volume_up_button_y = window_main_height - button_volume_height -10
+
+volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
+volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
 
 screen.blit(background, (0, 0))
 
@@ -63,8 +70,9 @@ screen.blit(game_name_text, (game_name_x, game_name_y))
 
 screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
 screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
-screen.blit(volume_up_text, (volume_up_button_x + (button_volume_width - volume_up_text.get_width()) // 2, volume_up_button_y + (button_volume_height - volume_up_text.get_height()) // 2))
-screen.blit(volume_down_text, (volume_down_button_x + (button_volume_width - volume_down_text.get_width()) // 2, volume_down_button_y + (button_volume_height - volume_down_text.get_height()) // 2))
+screen.blit(volume_up_image, (volume_up_button_x, volume_up_button_y))
+screen.blit(volume_down_image, (volume_down_button_x, volume_down_button_y))
+
 
 pygame.mixer.music.load('./src/sound/sound_main.mp3')
 pygame.mixer.music.play(-1)
