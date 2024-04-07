@@ -78,7 +78,6 @@ config_text = font.render('Config', True, (0, 0, 0))
 volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
 volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
 mute_image = pygame.transform.scale(mute_image, (button_volume_width, button_volume_height))
-
 game_name_font = pygame.font.Font(None, 72)
 game_name_text = game_name_font.render('My Star Game', True, (255, 255, 255))
 game_name_x = window_main_width / 2 - game_name_text.get_width() / 2
@@ -107,7 +106,7 @@ while True:
             if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                 print("Iniciar juego")
             if config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
-                print("Abrir configuración")
+                print("Configuración")
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
                 pygame.quit()
                 sys.exit()
