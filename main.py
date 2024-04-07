@@ -9,6 +9,8 @@ window_main_height = 470
 
 screen = pygame.display.set_mode((window_main_width, window_main_height))
 
+pygame.display.set_caption("My Star - Home")
+
 background = pygame.image.load('./src/img/home.jpg')
 
 volume_up_image = pygame.image.load('./src/img/volume_up.png')
@@ -16,6 +18,7 @@ volume_down_image = pygame.image.load('./src/img/volume_down.png')
 mute_image = pygame.image.load('./src/img/mute.png')
 
 start_button_color = (0, 255, 19)
+config_button_color = (0, 0, 255)
 exit_button_color = (255, 0, 0)
 volume_up_button_color = (255, 255, 0)
 volume_down_button_color = (255, 0, 0)
@@ -23,16 +26,19 @@ mute_button_color = (255, 0, 0)
 border_color = (23, 23, 23)
 
 button_width = 180
-button_height = 65
+button_height = 60
 button_volume_width = 40
 button_volume_height = 40
 border_width = 5
 
 start_button_x = window_main_width / 2 - button_width / 2
-start_button_y = window_main_height / 2 - button_height / 2
+start_button_y = window_main_height / 2 - button_height / 2 - 30
 
 exit_button_x = window_main_width / 2 - button_width / 2
-exit_button_y = start_button_y + button_height + 30
+exit_button_y = start_button_y + button_height + 90
+
+config_button_x = window_main_width / 2 - button_width / 2
+config_button_y = (start_button_y + exit_button_y) / 2 - button_height + 60
 
 volume_up_button_x = 0
 volume_up_button_y = window_main_height - 3 * button_volume_height -10
@@ -47,6 +53,9 @@ screen.blit(background, (0, 0))
 
 pygame.draw.rect(screen, border_color, pygame.Rect(start_button_x - border_width, start_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
 pygame.draw.rect(screen, start_button_color, pygame.Rect(start_button_x, start_button_y, button_width, button_height))
+
+pygame.draw.rect(screen, border_color, pygame.Rect(config_button_x - border_width, config_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
+pygame.draw.rect(screen, config_button_color, pygame.Rect(config_button_x, config_button_y, button_width, button_height))
 
 pygame.draw.rect(screen, border_color, pygame.Rect(exit_button_x - border_width, exit_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
 pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
@@ -64,19 +73,21 @@ font = pygame.font.Font(None, 40)
 
 start_text = font.render('Play', True, (0, 0, 0))
 exit_text = font.render('Exit', True, (0, 0, 0))
+config_text = font.render('Config', True, (0, 0, 0))
 
 volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
 volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
 mute_image = pygame.transform.scale(mute_image, (button_volume_width, button_volume_height))
 
 game_name_font = pygame.font.Font(None, 72)
-game_name_text = game_name_font.render('My Star', True, (255, 255, 255))
+game_name_text = game_name_font.render('My Star Game', True, (255, 255, 255))
 game_name_x = window_main_width / 2 - game_name_text.get_width() / 2
 game_name_y = start_button_y / 2 - game_name_text.get_height() / 2
-screen.blit(game_name_text, (game_name_x, game_name_y))
 
+screen.blit(game_name_text, (game_name_x, game_name_y))
 screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
 screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
+screen.blit(config_text, (config_button_x + (button_width - config_text.get_width()) // 2, config_button_y + (button_height - config_text.get_height()) // 2))
 screen.blit(volume_up_image, (volume_up_button_x, volume_up_button_y))
 screen.blit(volume_down_image, (volume_down_button_x, volume_down_button_y))
 screen.blit(mute_image, (mute_button_x, mute_button_y))
@@ -95,6 +106,8 @@ while True:
             x, y = pygame.mouse.get_pos()
             if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                 print("Iniciar juego")
+            if config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
+                print("Abrir configuración")
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
                 pygame.quit()
                 sys.exit()
