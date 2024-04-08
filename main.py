@@ -1,6 +1,7 @@
 import pygame
 import sys
 from game import GameWindow
+from game import Game
 
 pygame.init()
 pygame.mixer.init()
@@ -97,6 +98,8 @@ screen.blit(mute_image, (mute_button_x, mute_button_y))
 # pygame.mixer.music.play(-1)
 
 pygame.display.flip()
+
+game = Ga
 
 while True:
     for event in pygame.event.get():
