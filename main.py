@@ -1,5 +1,6 @@
 import pygame
 import sys
+from game import GameWindow
 
 pygame.init()
 pygame.mixer.init()
@@ -18,7 +19,7 @@ volume_down_image = pygame.image.load('./src/img/volume_down.png')
 mute_image = pygame.image.load('./src/img/mute.png')
 
 start_button_color = (0, 255, 19)
-config_button_color = (0, 0, 255)
+config_button_color = (109, 109, 255)
 exit_button_color = (255, 0, 0)
 volume_up_button_color = (255, 255, 0)
 volume_down_button_color = (255, 0, 0)
@@ -91,8 +92,9 @@ screen.blit(volume_up_image, (volume_up_button_x, volume_up_button_y))
 screen.blit(volume_down_image, (volume_down_button_x, volume_down_button_y))
 screen.blit(mute_image, (mute_button_x, mute_button_y))
 
-pygame.mixer.music.load('./src/sound/sound_main.mp3')
-pygame.mixer.music.play(-1)
+# Deshabilitado mientras desarrollo el juego
+# pygame.mixer.music.load('./src/sound/sound_main.mp3')
+# pygame.mixer.music.play(-1)
 
 pygame.display.flip()
 
@@ -105,9 +107,13 @@ while True:
             x, y = pygame.mouse.get_pos()
             if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                 print("Iniciar juego")
+                pygame.mixer.music.stop()
+                game_window = GameWindow(850, 531, './src/img/space.jpg', './src/img/base.png')
+                game_window.render()
             if config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
                 print("Configuración")
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
+                print("Salir")
                 pygame.quit()
                 sys.exit()
             elif volume_up_button_x <= x <= volume_up_button_x + button_volume_width and volume_up_button_y <= y <= volume_up_button_y + button_volume_height:
