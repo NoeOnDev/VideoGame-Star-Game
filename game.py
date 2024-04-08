@@ -18,6 +18,17 @@ class GameWindow:
         pygame.display.set_caption("My Star - Game")
         pygame.display.flip()
 
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                self.player.rect.y -= 5
+            elif event.key == pygame.K_DOWN:
+                self.player.rect.y += 5
+            elif event.key == pygame.K_LEFT:
+                self.player.rect.x -= 5
+            elif event.key == pygame.K_RIGHT:
+                self.player.rect.x += 5
+
 class MySprite(pygame.sprite.Sprite):
     def __init__(self, image_path):
         super().__init__()

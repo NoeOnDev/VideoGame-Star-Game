@@ -114,6 +114,8 @@ while True:
                 pygame.mixer.music.stop()
                 game_window = GameWindow(850, 531, './src/img/space.jpg', './src/img/base.png', './src/img/nave.png')
                 game_window.render()
+        elif game_window is not None:
+            game_window.handle_event(event)
 
             if config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
                 print("Configuración")
