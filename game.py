@@ -1,18 +1,20 @@
 import pygame
 
 class GameWindow:
-    def __init__(self, width, height, background_image_path, corner_image_path):
+    def __init__(self, width, height, background_image_path, corner_image_path, player_image_path):
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.background = MySprite(background_image_path)
         self.corner_image = MySprite(corner_image_path)
+        self.player = MySprite(player_image_path)
 
     def render(self):
         self.screen.blit(self.background.image, (0, 0))
         corner_image_width = self.corner_image.image.get_width()
         corner_image_height = self.corner_image.image.get_height()
         self.screen.blit(self.corner_image.image, (self.width - corner_image_width, self.height - corner_image_height))
+        self.screen.blit(self.player.image, self.player.rect.topleft)
         pygame.display.set_caption("My Star - Game")
         pygame.display.flip()
 
