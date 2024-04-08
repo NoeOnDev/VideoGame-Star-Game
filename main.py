@@ -114,6 +114,7 @@ while True:
                 print("Configuración")
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
                 print("Salir")
+                pygame.mixer.music.stop()
                 pygame.quit()
                 sys.exit()
             elif volume_up_button_x <= x <= volume_up_button_x + button_volume_width and volume_up_button_y <= y <= volume_up_button_y + button_volume_height:
