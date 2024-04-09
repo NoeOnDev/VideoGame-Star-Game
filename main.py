@@ -104,10 +104,9 @@ def start_game():
     pygame.display.set_caption("My Star - Game")
 
     clock = pygame.time.Clock()
-    
+
     background_image = pygame.image.load('./src/img/space.jpg')
     background_image = pygame.transform.scale(background_image, (game_window_width, game_window_height))
-    game_screen.blit(background_image, (0, 0))
 
     base_image = pygame.image.load('./src/img/base.png')
     base_width = 76
@@ -115,7 +114,7 @@ def start_game():
     base_image = pygame.transform.scale(base_image, (base_width, base_height))
     base_x = game_window_width - base_width
     base_y = game_window_height - base_height
-    game_screen.blit(base_image, (base_x, base_y))
+    base_mask = pygame.mask.from_surface(base_image)
 
     player_image = pygame.image.load('./src/img/nave.png')
     player_width = 40
@@ -123,9 +122,7 @@ def start_game():
     player_image = pygame.transform.scale(player_image, (player_width, player_height))
     player_x = 0
     player_y = (game_window_height - player_height) / 2
-    game_screen.blit(player_image, (player_x, player_y))
-
-    pygame.display.flip()
+    player_mask = pygame.mask.from_surface(player_image)
 
     player_speed = 1
     move_left = move_right = move_up = move_down = False
@@ -168,6 +165,15 @@ def start_game():
         game_screen.blit(background_image, (0, 0))
         game_screen.blit(base_image, (base_x, base_y))
         game_screen.blit(player_image, (player_x, player_y))
+
+        offset_x = base_x - player_x
+        offset_y = base_y - player_y
+
+        if player_mask.overlap(base_mask, (offset_x, offset_y)):
+            print("Fin del juego")
+            pygame.quit()
+            sys.exit()
+
         pygame.display.flip()
 
 while True:
