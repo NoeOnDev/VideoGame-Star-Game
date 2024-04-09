@@ -97,6 +97,79 @@ screen.blit(mute_image, (mute_button_x, mute_button_y))
 
 pygame.display.flip()
 
+def start_game():
+    game_window_width = 850
+    game_window_height = 531
+    game_screen = pygame.display.set_mode((game_window_width, game_window_height))
+    pygame.display.set_caption("My Star - Game")
+
+    clock = pygame.time.Clock()
+    
+    background_image = pygame.image.load('./src/img/space.jpg')
+    background_image = pygame.transform.scale(background_image, (game_window_width, game_window_height))
+    game_screen.blit(background_image, (0, 0))
+
+    base_image = pygame.image.load('./src/img/base.png')
+    base_width = 76
+    base_height = 71
+    base_image = pygame.transform.scale(base_image, (base_width, base_height))
+    base_x = game_window_width - base_width
+    base_y = game_window_height - base_height
+    game_screen.blit(base_image, (base_x, base_y))
+
+    player_image = pygame.image.load('./src/img/nave.png')
+    player_width = 40
+    player_height = 25
+    player_image = pygame.transform.scale(player_image, (player_width, player_height))
+    player_x = 0
+    player_y = (game_window_height - player_height) / 2
+    game_screen.blit(player_image, (player_x, player_y))
+
+    pygame.display.flip()
+
+    player_speed = 1
+    move_left = move_right = move_up = move_down = False
+
+    while True:
+        clock.tick(60)
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    move_left = True
+                elif event.key == pygame.K_RIGHT:
+                    move_right = True
+                elif event.key == pygame.K_UP:
+                    move_up = True
+                elif event.key == pygame.K_DOWN:
+                    move_down = True
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    move_left = False
+                elif event.key == pygame.K_RIGHT:
+                    move_right = False
+                elif event.key == pygame.K_UP:
+                    move_up = False
+                elif event.key == pygame.K_DOWN:
+                    move_down = False
+
+        if move_left and player_x - player_speed > 0:
+            player_x -= player_speed
+        if move_right and player_x + player_speed < game_window_width - player_width:
+            player_x += player_speed
+        if move_up and player_y - player_speed > 0:
+            player_y -= player_speed
+        if move_down and player_y + player_speed < game_window_height - player_height:
+            player_y += player_speed
+
+        game_screen.blit(background_image, (0, 0))
+        game_screen.blit(base_image, (base_x, base_y))
+        game_screen.blit(player_image, (player_x, player_y))
+        pygame.display.flip()
+
 while True:
     events = pygame.event.get()
     for event in events:
@@ -108,6 +181,7 @@ while True:
             if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                 print("Iniciar juego")
                 pygame.mixer.music.stop()
+                start_game()
             elif config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
                 print("Configuración")
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
