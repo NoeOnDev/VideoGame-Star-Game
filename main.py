@@ -1,7 +1,5 @@
 import pygame
 import sys
-from game import GameWindow
-from game import Game
 
 pygame.init()
 pygame.mixer.init()
@@ -99,9 +97,6 @@ screen.blit(mute_image, (mute_button_x, mute_button_y))
 
 pygame.display.flip()
 
-game = Game()
-game_window = None
-
 while True:
     events = pygame.event.get()
     for event in events:
@@ -113,7 +108,6 @@ while True:
             if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                 print("Iniciar juego")
                 pygame.mixer.music.stop()
-                game_window = GameWindow(850, 531, './src/img/space.jpg', './src/img/base.png', './src/img/nave.png')
             elif config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
                 print("Configuración")
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
@@ -129,8 +123,3 @@ while True:
                 pygame.mixer.music.set_volume(max(0, volume - 0.1))
             elif mute_button_x <= x <= mute_button_x + button_volume_width and mute_button_y <= y <= mute_button_y + button_volume_height:
                 pygame.mixer.music.set_volume(0)
-
-    if game_window is not None:
-        for event in events:
-            game_window.handle_event(event)
-        game_window.render()
