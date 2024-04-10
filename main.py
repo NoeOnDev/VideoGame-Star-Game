@@ -125,13 +125,22 @@ def start_game():
     player_y = (game_window_height - player_height) / 2
     player_mask = pygame.mask.from_surface(player_image)
 
-    meteor_image = pygame.image.load('./src/img/asteroide.png')
-    meteor_width = 50
-    meteor_height = 50
-    meteor_image = pygame.transform.scale(meteor_image, (meteor_width, meteor_height))
-    meteor_x = game_window_width - meteor_width
-    meteor_y = random.randint(0, game_window_height - meteor_height)
-    meteor_mask = pygame.mask.from_surface(meteor_image)
+    meteor_sizes = [(50, 50), (30, 30), (70, 70)]
+    meteors = []
+    for size in meteor_sizes:
+        meteor_image = pygame.image.load('./src/img/asteroide.png')
+        meteor_image = pygame.transform.scale(meteor_image, size)
+        meteor_x = game_window_width - size[0]
+        meteor_y = random.randint(0, game_window_height - size[1])
+        meteor_mask = pygame.mask.from_surface(meteor_image)
+        meteors.append({
+            'image': meteor_image,
+            'x': meteor_x,
+            'y': meteor_y,
+            'mask': meteor_mask,
+            'width': size[0],
+            'height': size[1]
+        })
 
     player_speed = 1
     move_left = move_right = move_up = move_down = False
@@ -173,30 +182,33 @@ def start_game():
         if move_down and player_y + player_speed < game_window_height - player_height:
             player_y += player_speed
 
-        meteor_x -= meteor_speed
-        if meteor_x + meteor_width < 0:
-            meteor_x = game_window_width
-            meteor_y = random.randint(0, game_window_height - meteor_height)
+        for meteor in meteors:
+            meteor['x'] -= meteor_speed
+            if meteor['x'] + meteor['width'] < 0:
+                meteor['x'] = game_window_width
+                meteor['y'] = random.randint(0, game_window_height - meteor['height'])
 
         game_screen.blit(background_image, (0, 0))
         game_screen.blit(base_image, (base_x, base_y))
         game_screen.blit(player_image, (player_x, player_y))
-        game_screen.blit(meteor_image, (meteor_x, meteor_y))
+        for meteor in meteors:
+            game_screen.blit(meteor['image'], (meteor['x'], meteor['y']))
 
         offset_x_base = base_x - player_x
         offset_y_base = base_y - player_y
-        offset_x_meteor = meteor_x - player_x
-        offset_y_meteor = meteor_y - player_y
 
         if player_mask.overlap(base_mask, (offset_x_base, offset_y_base)):
             print("Fin del juego")
             pygame.quit()
             sys.exit()
 
-        if player_mask.overlap(meteor_mask, (offset_x_meteor, offset_y_meteor)):
-            print("Perdiste")
-            # pygame.quit()
-            #sys.exit()
+        for meteor in meteors:
+            offset_x_meteor = meteor['x'] - player_x
+            offset_y_meteor = meteor['y'] - player_y
+            if player_mask.overlap(meteor['mask'], (offset_x_meteor, offset_y_meteor)):
+                print("Perdiste")
+                # pygame.quit()
+                #sys.exit()
 
         pygame.display.flip()
 
