@@ -133,7 +133,7 @@ def start_game():
 
     meteor_sizes = [(50, 50), (30, 30), (70, 70)]
     meteors = []
-    for _ in range(random.randint(18, 20)):
+    for _ in range(random.randint(24, 26)):
         size = random.choice(meteor_sizes)
         meteor_image = pygame.image.load('./src/img/asteroide.png')
         meteor_image = pygame.transform.scale(meteor_image, size)
@@ -156,18 +156,18 @@ def start_game():
     
     def show_game_over_modal():
         pygame.font.init()
-        font = pygame.font.Font(None, 32) 
+        font = pygame.font.Font(None, 52) 
 
-        modal_width = 500
-        modal_height = 250
+        modal_width = 600
+        modal_height = 300
         modal_x = (game_window_width - modal_width) / 2
         modal_y = (game_window_height - modal_height) / 2
         modal_rect = pygame.Rect(modal_x, modal_y, modal_width, modal_height)
 
-        button_width = 50
-        button_height = 50
+        button_width = 100
+        button_height = 100
         button_y = modal_y + 100
-        button_spacing = 90
+        button_spacing = 75
 
         retry_button = pygame.Rect(modal_x + button_spacing, button_y, button_width, button_height)
         menu_button = pygame.Rect(modal_x + button_width + 2 * button_spacing, button_y, button_width, button_height)
@@ -186,10 +186,10 @@ def start_game():
         game_over_text_rect = game_over_text.get_rect(center=(game_window_width/2, modal_y + 30))
 
         blur_surface = pygame.Surface((game_window_width, game_window_height), pygame.SRCALPHA)
-        pygame.draw.rect(blur_surface, (45, 255, 239, 50), modal_rect, border_radius=15)
-        pygame.draw.rect(blur_surface, (45, 255, 239, 128), retry_button)
-        pygame.draw.rect(blur_surface, (45, 255, 239, 128), menu_button)
-        pygame.draw.rect(blur_surface, (45, 255, 239, 128), quit_button)
+        pygame.draw.rect(blur_surface, (231, 83, 83, 50), modal_rect, border_radius=15)
+        pygame.draw.rect(blur_surface, (231, 83, 83, 50), retry_button)
+        pygame.draw.rect(blur_surface, (231, 83, 83, 50), menu_button)
+        pygame.draw.rect(blur_surface, (231, 83, 83, 50), quit_button)
 
         while True:
             for event in pygame.event.get():
