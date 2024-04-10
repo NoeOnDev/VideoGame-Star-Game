@@ -153,7 +153,68 @@ def start_game():
 
     player_speed = 1
     move_left = move_right = move_up = move_down = False
+    
+    def show_game_over_modal():
+        pygame.font.init()
+        font = pygame.font.Font(None, 32) 
 
+        modal_width = 500
+        modal_height = 250
+        modal_x = (game_window_width - modal_width) / 2
+        modal_y = (game_window_height - modal_height) / 2
+        modal_rect = pygame.Rect(modal_x, modal_y, modal_width, modal_height)
+
+        button_width = 50
+        button_height = 50
+        button_y = modal_y + 100
+        button_spacing = 90
+
+        retry_button = pygame.Rect(modal_x + button_spacing, button_y, button_width, button_height)
+        menu_button = pygame.Rect(modal_x + button_width + 2 * button_spacing, button_y, button_width, button_height)
+        quit_button = pygame.Rect(modal_x + 2 * button_width + 3 * button_spacing, button_y, button_width, button_height)
+
+        retry_image = pygame.image.load('./src/img/retry.png')
+        retry_image = pygame.transform.scale(retry_image, (button_width, button_height))
+
+        menu_image = pygame.image.load('./src/img/home.png')
+        menu_image = pygame.transform.scale(menu_image, (button_width, button_height))
+
+        quit_image = pygame.image.load('./src/img/exit.png')
+        quit_image = pygame.transform.scale(quit_image, (button_width, button_height))
+
+        game_over_text = font.render("Perdiste", True, (0, 0, 0))
+        game_over_text_rect = game_over_text.get_rect(center=(game_window_width/2, modal_y + 30))
+
+        blur_surface = pygame.Surface((game_window_width, game_window_height), pygame.SRCALPHA)
+        pygame.draw.rect(blur_surface, (45, 255, 239, 50), modal_rect, border_radius=15)
+        pygame.draw.rect(blur_surface, (45, 255, 239, 128), retry_button)
+        pygame.draw.rect(blur_surface, (45, 255, 239, 128), menu_button)
+        pygame.draw.rect(blur_surface, (45, 255, 239, 128), quit_button)
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if retry_button.collidepoint(event.pos):
+                        start_game()
+                    elif menu_button.collidepoint(event.pos):
+
+                        pass
+                    elif quit_button.collidepoint(event.pos):
+                        pygame.quit()
+                        sys.exit()
+
+            game_screen.blit(blur_surface, (0, 0))
+
+            game_screen.blit(retry_image, retry_button)
+            game_screen.blit(menu_image, menu_button)
+            game_screen.blit(quit_image, quit_button)
+
+            game_screen.blit(game_over_text, game_over_text_rect)
+            pygame.display.flip()
+    
     while True:
         clock.tick(60)
         events = pygame.event.get()
@@ -161,6 +222,7 @@ def start_game():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+                
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     move_left = True
@@ -215,8 +277,7 @@ def start_game():
             offset_y_meteor = meteor['y'] - player_y
             if player_mask.overlap(meteor['mask'], (offset_x_meteor, offset_y_meteor)):
                 print("Perdiste")
-                # pygame.quit()
-                #sys.exit()
+                show_game_over_modal()
 
         pygame.display.flip()
 
