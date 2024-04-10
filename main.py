@@ -127,11 +127,11 @@ def start_game():
 
     meteor_sizes = [(50, 50), (30, 30), (70, 70)]
     meteors = []
-    for _ in range(random.randint(9, 12)):
+    for _ in range(random.randint(16, 20)):
         size = random.choice(meteor_sizes)
         meteor_image = pygame.image.load('./src/img/asteroide.png')
         meteor_image = pygame.transform.scale(meteor_image, size)
-        meteor_x = random.randint(0, game_window_width - size[0])
+        meteor_x = random.randint(game_window_width // 2, game_window_width - size[0])
         meteor_y = random.randint(0, game_window_height - size[1])
         meteor_mask = pygame.mask.from_surface(meteor_image)
         meteor_speed = random.randint(1, 3)
