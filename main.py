@@ -127,7 +127,7 @@ def start_game():
 
     meteor_sizes = [(50, 50), (30, 30), (70, 70)]
     meteors = []
-    for _ in range(random.randint(16, 20)):
+    for _ in range(random.randint(18, 20)):
         size = random.choice(meteor_sizes)
         meteor_image = pygame.image.load('./src/img/asteroide.png')
         meteor_image = pygame.transform.scale(meteor_image, size)
