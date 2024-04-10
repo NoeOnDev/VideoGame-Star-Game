@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 pygame.mixer.init()
@@ -124,8 +125,18 @@ def start_game():
     player_y = (game_window_height - player_height) / 2
     player_mask = pygame.mask.from_surface(player_image)
 
+    meteor_image = pygame.image.load('./src/img/asteroide.png')
+    meteor_width = 50
+    meteor_height = 50
+    meteor_image = pygame.transform.scale(meteor_image, (meteor_width, meteor_height))
+    meteor_x = game_window_width - meteor_width
+    meteor_y = random.randint(0, game_window_height - meteor_height)
+    meteor_mask = pygame.mask.from_surface(meteor_image)
+
     player_speed = 1
     move_left = move_right = move_up = move_down = False
+
+    meteor_speed = 2
 
     while True:
         clock.tick(60)
@@ -162,17 +173,30 @@ def start_game():
         if move_down and player_y + player_speed < game_window_height - player_height:
             player_y += player_speed
 
+        meteor_x -= meteor_speed
+        if meteor_x + meteor_width < 0:
+            meteor_x = game_window_width
+            meteor_y = random.randint(0, game_window_height - meteor_height)
+
         game_screen.blit(background_image, (0, 0))
         game_screen.blit(base_image, (base_x, base_y))
         game_screen.blit(player_image, (player_x, player_y))
+        game_screen.blit(meteor_image, (meteor_x, meteor_y))
 
-        offset_x = base_x - player_x
-        offset_y = base_y - player_y
+        offset_x_base = base_x - player_x
+        offset_y_base = base_y - player_y
+        offset_x_meteor = meteor_x - player_x
+        offset_y_meteor = meteor_y - player_y
 
-        if player_mask.overlap(base_mask, (offset_x, offset_y)):
+        if player_mask.overlap(base_mask, (offset_x_base, offset_y_base)):
             print("Fin del juego")
             pygame.quit()
             sys.exit()
+
+        if player_mask.overlap(meteor_mask, (offset_x_meteor, offset_y_meteor)):
+            print("Perdiste")
+            # pygame.quit()
+            #sys.exit()
 
         pygame.display.flip()
 
