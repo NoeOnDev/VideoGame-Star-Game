@@ -99,10 +99,16 @@ screen.blit(mute_image, (mute_button_x, mute_button_y))
 pygame.display.flip()
 
 def start_game():
+    pygame.init()
+    pygame.font.init()
     game_window_width = 850
     game_window_height = 531
     game_screen = pygame.display.set_mode((game_window_width, game_window_height))
     pygame.display.set_caption("My Star - Game")
+    
+    font = pygame.font.Font(None, 24)
+    player_name = "Player 1"
+    text = font.render(player_name, True, (255, 255, 255))
 
     clock = pygame.time.Clock()
 
@@ -192,6 +198,7 @@ def start_game():
         game_screen.blit(background_image, (0, 0))
         game_screen.blit(base_image, (base_x, base_y))
         game_screen.blit(player_image, (player_x, player_y))
+        game_screen.blit(text, (player_x, player_y - 24))
         for meteor in meteors:
             game_screen.blit(meteor['image'], (meteor['x'], meteor['y']))
 
