@@ -93,10 +93,59 @@ screen.blit(volume_down_image, (volume_down_button_x, volume_down_button_y))
 screen.blit(mute_image, (mute_button_x, mute_button_y))
 
 # Deshabilitado mientras desarrollo el juego
-# pygame.mixer.music.load('./src/sound/sound_main.mp3')
-# pygame.mixer.music.play(-1)
+pygame.mixer.music.load('./src/sound/sound_main.mp3')
+pygame.mixer.music.play(-1)
 
 pygame.display.flip()
+
+def draw_modal_home():
+    modal_width = 500
+    modal_height = 400
+    modal_x = (window_main_width - modal_width) / 2
+    modal_y = (window_main_height - modal_height) / 2
+    
+    modal_rect = pygame.Rect(modal_x, modal_y, modal_width, modal_height)
+    pygame.draw.rect(screen, (255, 255, 255), modal_rect)
+    pygame.draw.rect(screen, (0, 0, 0), modal_rect, 5)
+
+    font = pygame.font.Font(None, 40)
+    title_text = font.render("Settings", True, (0, 0, 0))
+    title_text_x = modal_x + (modal_width - title_text.get_width()) / 2
+    title_text_y = modal_y + 20
+    screen.blit(title_text, (title_text_x, title_text_y))
+    
+    volume_text = font.render("Volume", True, (0, 0, 0))
+    volume_text_x = modal_x + 20
+    volume_text_y = modal_y + 100
+    screen.blit(volume_text, (volume_text_x, volume_text_y))
+
+    volume = pygame.mixer.music.get_volume()
+    volume_text = font.render(str(int(volume * 100)), True, (0, 0, 0))
+    volume_text_x = modal_x + modal_width - 20 - volume_text.get_width()
+    volume_text_y = modal_y + 100
+    screen.blit(volume_text, (volume_text_x, volume_text_y))
+    
+    volume_up_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 100, 40, 40)
+    volume_down_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 150, 40, 40)
+    mute_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 200, 40, 40)
+    
+    pygame.draw.rect(screen, (255, 255, 255), volume_up_button)
+    pygame.draw.rect(screen, (255, 255, 255), volume_down_button)
+    pygame.draw.rect(screen, (255, 255, 255), mute_button)
+    
+    volume_up_image = pygame.image.load('./src/img/volume_up.png')
+    volume_down_image = pygame.image.load('./src/img/volume_down.png')
+    mute_image = pygame.image.load('./src/img/mute.png')
+
+    volume_up_image = pygame.transform.scale(volume_up_image, (40, 40))
+    volume_down_image = pygame.transform.scale(volume_down_image, (40, 40))
+    mute_image = pygame.transform.scale(mute_image, (40, 40))
+    
+    screen.blit(volume_up_image, (modal_x + modal_width - 60, modal_y + 100))
+    screen.blit(volume_down_image, (modal_x + modal_width - 60, modal_y + 150))
+    screen.blit(mute_image, (modal_x + modal_width - 60, modal_y + 200))
+    
+    pygame.display.flip()
 
 def start_game():
     pygame.init()
@@ -291,6 +340,7 @@ while True:
                 start_game()
             elif config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
                 print("Configuración")
+                draw_modal_home()
             elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
                 print("Salir")
                 pygame.mixer.music.stop()
