@@ -41,15 +41,6 @@ exit_button_y = start_button_y + button_height + 90
 config_button_x = window_main_width / 2 - button_width / 2
 config_button_y = (start_button_y + exit_button_y) / 2 - button_height + 60
 
-volume_up_button_x = 0
-volume_up_button_y = window_main_height - 3 * button_volume_height -10
-
-volume_down_button_x = 0
-volume_down_button_y = window_main_height - 2 * button_volume_height -5
-
-mute_button_x = 0
-mute_button_y = window_main_height - button_volume_height
-
 screen.blit(background, (0, 0))
 
 pygame.draw.rect(screen, border_color, pygame.Rect(start_button_x - border_width, start_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
@@ -60,15 +51,6 @@ pygame.draw.rect(screen, config_button_color, pygame.Rect(config_button_x, confi
 
 pygame.draw.rect(screen, border_color, pygame.Rect(exit_button_x - border_width, exit_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
 pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
-
-pygame.draw.rect(screen, border_color, pygame.Rect(volume_up_button_x - border_width, volume_up_button_y - border_width, button_volume_width + 2 * border_width, button_volume_height + 2 * border_width))
-pygame.draw.rect(screen, volume_up_button_color, pygame.Rect(volume_up_button_x, volume_up_button_y, button_volume_width, button_volume_height))
-
-pygame.draw.rect(screen, border_color, pygame.Rect(volume_down_button_x - border_width, volume_down_button_y - border_width, button_volume_width + 2 * border_width, button_volume_height + 2 * border_width))
-pygame.draw.rect(screen, volume_down_button_color, pygame.Rect(volume_down_button_x, volume_down_button_y, button_volume_width, button_volume_height))
-
-pygame.draw.rect(screen, border_color, pygame.Rect(mute_button_x - border_width, mute_button_y - border_width, button_volume_width + 2 * border_width, button_volume_height + 2 * border_width))
-pygame.draw.rect(screen, mute_button_color, pygame.Rect(mute_button_x, mute_button_y, button_volume_width, button_volume_height))
 
 font = pygame.font.Font(None, 40)
 
@@ -88,9 +70,6 @@ screen.blit(game_name_text, (game_name_x, game_name_y))
 screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
 screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
 screen.blit(config_text, (config_button_x + (button_width - config_text.get_width()) // 2, config_button_y + (button_height - config_text.get_height()) // 2))
-screen.blit(volume_up_image, (volume_up_button_x, volume_up_button_y))
-screen.blit(volume_down_image, (volume_down_button_x, volume_down_button_y))
-screen.blit(mute_image, (mute_button_x, mute_button_y))
 
 # Deshabilitado mientras desarrollo el juego
 pygame.mixer.music.load('./src/sound/sound_main.mp3')
@@ -98,7 +77,15 @@ pygame.mixer.music.play(-1)
 
 pygame.display.flip()
 
+is_modal_open = False
+
+volume_up_button = None
+volume_down_button = None
+mute_button = None
+
 def draw_modal_home():
+    global is_modal_open, volume_up_button, volume_down_button, mute_button
+    is_modal_open = True
     modal_width = 500
     modal_height = 400
     modal_x = (window_main_width - modal_width) / 2
@@ -334,23 +321,25 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
-                print("Iniciar juego")
-                pygame.mixer.music.stop()
-                start_game()
-            elif config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
-                print("Configuración")
-                draw_modal_home()
-            elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
-                print("Salir")
-                pygame.mixer.music.stop()
-                pygame.quit()
-                sys.exit()
-            elif volume_up_button_x <= x <= volume_up_button_x + button_volume_width and volume_up_button_y <= y <= volume_up_button_y + button_volume_height:
-                volume = pygame.mixer.music.get_volume()
-                pygame.mixer.music.set_volume(min(1, volume + 0.1))
-            elif volume_down_button_x <= x <= volume_down_button_x + button_volume_width and volume_down_button_y <= y <= volume_down_button_y + button_volume_height:
-                volume = pygame.mixer.music.get_volume()
-                pygame.mixer.music.set_volume(max(0, volume - 0.1))
-            elif mute_button_x <= x <= mute_button_x + button_volume_width and mute_button_y <= y <= mute_button_y + button_volume_height:
-                pygame.mixer.music.set_volume(0)
+            if is_modal_open:
+                if volume_up_button.collidepoint(x, y):
+                    volume = pygame.mixer.music.get_volume()
+                    pygame.mixer.music.set_volume(min(1, volume + 0.1))
+                elif volume_down_button.collidepoint(x, y):
+                    volume = pygame.mixer.music.get_volume()
+                    pygame.mixer.music.set_volume(max(0, volume - 0.1))
+                elif mute_button.collidepoint(x, y):
+                    pygame.mixer.music.set_volume(0)
+            else:
+                if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
+                    print("Iniciar juego")
+                    pygame.mixer.music.stop()
+                    start_game()
+                elif config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
+                    print("Configuración")
+                    draw_modal_home()
+                elif exit_button_x <= x <= exit_button_x + button_width and exit_button_y <= y <= exit_button_y + button_height:
+                    print("Salir")
+                    pygame.mixer.music.stop()
+                    pygame.quit()
+                    sys.exit()
