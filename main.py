@@ -204,10 +204,9 @@ def start_game():
 
             game_screen.blit(blur_surface, (0, 0))
 
-            # Dibuja el texto de los botones
-            game_screen.blit(retry_text, retry_button.move(10, 10))  # Ajusta la posición del texto según sea necesario
-            game_screen.blit(menu_text, menu_button.move(10, 10))  # Ajusta la posición del texto según sea necesario
-            game_screen.blit(quit_text, quit_button.move(10, 10))  # Ajusta la posición del texto según sea necesario
+            game_screen.blit(retry_text, retry_button.move(10, 10))
+            game_screen.blit(menu_text, menu_button.move(10, 10))
+            game_screen.blit(quit_text, quit_button.move(10, 10))
 
             game_screen.blit(game_over_text, game_over_text_rect)
             pygame.display.flip()
