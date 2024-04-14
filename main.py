@@ -157,6 +157,7 @@ def start_game():
     def show_game_over_modal():
         pygame.font.init()
         font = pygame.font.Font(None, 52) 
+        button_font = pygame.font.Font(None, 40)
 
         modal_width = 600
         modal_height = 300
@@ -173,14 +174,9 @@ def start_game():
         menu_button = pygame.Rect(modal_x + button_width + 2 * button_spacing, button_y, button_width, button_height)
         quit_button = pygame.Rect(modal_x + 2 * button_width + 3 * button_spacing, button_y, button_width, button_height)
 
-        retry_image = pygame.image.load('./src/img/retry.png')
-        retry_image = pygame.transform.scale(retry_image, (button_width, button_height))
-
-        menu_image = pygame.image.load('./src/img/home.png')
-        menu_image = pygame.transform.scale(menu_image, (button_width, button_height))
-
-        quit_image = pygame.image.load('./src/img/exit.png')
-        quit_image = pygame.transform.scale(quit_image, (button_width, button_height))
+        retry_text = button_font.render("Reintentar", True, (0, 0, 0))
+        menu_text = button_font.render("Inicio", True, (0, 0, 0))
+        quit_text = button_font.render("Salir", True, (0, 0, 0))
 
         game_over_text = font.render("Perdiste", True, (0, 0, 0))
         game_over_text_rect = game_over_text.get_rect(center=(game_window_width/2, modal_y + 30))
@@ -200,7 +196,7 @@ def start_game():
                     if retry_button.collidepoint(event.pos):
                         start_game()
                     elif menu_button.collidepoint(event.pos):
-
+                        
                         pass
                     elif quit_button.collidepoint(event.pos):
                         pygame.quit()
@@ -208,9 +204,10 @@ def start_game():
 
             game_screen.blit(blur_surface, (0, 0))
 
-            game_screen.blit(retry_image, retry_button)
-            game_screen.blit(menu_image, menu_button)
-            game_screen.blit(quit_image, quit_button)
+            # Dibuja el texto de los botones
+            game_screen.blit(retry_text, retry_button.move(10, 10))  # Ajusta la posición del texto según sea necesario
+            game_screen.blit(menu_text, menu_button.move(10, 10))  # Ajusta la posición del texto según sea necesario
+            game_screen.blit(quit_text, quit_button.move(10, 10))  # Ajusta la posición del texto según sea necesario
 
             game_screen.blit(game_over_text, game_over_text_rect)
             pygame.display.flip()
