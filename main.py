@@ -83,8 +83,10 @@ volume_up_button = None
 volume_down_button = None
 mute_button = None
 
+close_button = is_modal_open
+
 def draw_modal_home():
-    global is_modal_open, volume_up_button, volume_down_button, mute_button
+    global is_modal_open, volume_up_button, volume_down_button, mute_button, close_button
     is_modal_open = True
     modal_width = 500
     modal_height = 400
@@ -115,6 +117,13 @@ def draw_modal_home():
     volume_up_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 100, 40, 40)
     volume_down_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 150, 40, 40)
     mute_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 200, 40, 40)
+    
+    close_button = pygame.Rect(modal_x + modal_width - 60, modal_y + 20, 40, 40)
+    pygame.draw.rect(screen, (255, 255, 255), close_button)
+    
+    close_image = pygame.image.load('./src/img/close.png')
+    close_image = pygame.transform.scale(close_image, (40, 40))
+    screen.blit(close_image, (modal_x + modal_width - 55, modal_y + 12))
     
     pygame.draw.rect(screen, (255, 255, 255), volume_up_button)
     pygame.draw.rect(screen, (255, 255, 255), volume_down_button)
@@ -330,6 +339,8 @@ while True:
                     pygame.mixer.music.set_volume(max(0, volume - 0.1))
                 elif mute_button.collidepoint(x, y):
                     pygame.mixer.music.set_volume(0)
+                elif close_button.collidepoint(x, y):
+                    is_modal_open = False
             else:
                 if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                     print("Iniciar juego")
