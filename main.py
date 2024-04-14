@@ -74,7 +74,7 @@ font = pygame.font.Font(None, 40)
 
 start_text = font.render('Play', True, (0, 0, 0))
 exit_text = font.render('Exit', True, (0, 0, 0))
-config_text = font.render('Config', True, (0, 0, 0))
+config_text = font.render('Settings', True, (0, 0, 0))
 
 volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
 volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
@@ -159,8 +159,8 @@ def start_game():
         font = pygame.font.Font(None, 52) 
         button_font = pygame.font.Font(None, 40)
 
-        modal_width = 600
-        modal_height = 300
+        modal_width = 500
+        modal_height = 200
         modal_x = (game_window_width - modal_width) / 2
         modal_y = (game_window_height - modal_height) / 2
         modal_rect = pygame.Rect(modal_x, modal_y, modal_width, modal_height)
@@ -168,15 +168,15 @@ def start_game():
         button_width = 100
         button_height = 100
         button_y = modal_y + 100
-        button_spacing = 75
+        button_spacing = 60
 
         retry_button = pygame.Rect(modal_x + button_spacing, button_y, button_width, button_height)
         menu_button = pygame.Rect(modal_x + button_width + 2 * button_spacing, button_y, button_width, button_height)
         quit_button = pygame.Rect(modal_x + 2 * button_width + 3 * button_spacing, button_y, button_width, button_height)
 
-        retry_text = button_font.render("Reintentar", True, (0, 0, 0))
-        menu_text = button_font.render("Inicio", True, (0, 0, 0))
-        quit_text = button_font.render("Salir", True, (0, 0, 0))
+        retry_text = button_font.render("Retry", True, (0, 0, 0))
+        menu_text = button_font.render("Home", True, (0, 0, 0))
+        quit_text = button_font.render("Exit", True, (0, 0, 0))
 
         game_over_text = font.render("Perdiste", True, (0, 0, 0))
         game_over_text_rect = game_over_text.get_rect(center=(game_window_width/2, modal_y + 30))
