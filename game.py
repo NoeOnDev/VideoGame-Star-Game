@@ -10,6 +10,7 @@ FPS = 60
 pygame.init()
 
 ventana = pygame.display.set_mode(SCREEN_SIZE)
+pygame.display.set_caption('Juego de Nave')
 
 player_image = pygame.image.load('./src/img/nave.png')
 player_image = pygame.transform.scale(player_image, (50, 30))
@@ -21,8 +22,12 @@ clock = pygame.time.Clock()
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('localhost', 5555))
 
+other_player_x, other_player_y = 0, 0
 running = True
+
 while running:
+    ventana.fill(BACKGROUND_COLOR)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -39,12 +44,22 @@ while running:
     if keys[pygame.K_DOWN]:
         player_rect.y += PLAYER_SPEED
 
-    client.send(f'{player_rect.x},{player_rect.y}'.encode())
+    try:
+        position_message = f'{player_rect.x},{player_rect.y}'
+        client.send(position_message.encode())
+    except BrokenPipeError:
+        print("La conexión con el servidor se ha perdido.")
+        client.close()
+        running = False
+        continue
 
-    other_player_position = client.recv(1024).decode()
-    other_player_x, other_player_y = map(int, other_player_position.split(','))
-
-    ventana.fill(BACKGROUND_COLOR)
+    try:
+        other_player_position = client.recv(1024).decode()
+        if other_player_position:
+            print(f"Recibida posición de otro jugador: {other_player_position}")
+            other_player_x, other_player_y = map(int, other_player_position.split(','))
+    except Exception as e:
+        print(f"Error al recibir datos del servidor: {e}")
 
     ventana.blit(player_image, player_rect)
 
@@ -54,3 +69,7 @@ while running:
     pygame.display.flip()
 
     clock.tick(FPS)
+
+
+pygame.quit()
+sys.exit()
