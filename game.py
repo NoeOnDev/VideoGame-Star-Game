@@ -15,6 +15,8 @@ player_image = pygame.transform.scale(player_image, (50, 30))
 
 player_rect = player_image.get_rect()
 
+clock = pygame.time.Clock()
+
 running = True
 while running:
     for event in pygame.event.get():
@@ -38,3 +40,5 @@ while running:
     ventana.blit(player_image, player_rect)
 
     pygame.display.flip()
+
+    clock.tick(FPS)
