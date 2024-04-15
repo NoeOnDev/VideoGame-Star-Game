@@ -72,8 +72,8 @@ screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) /
 screen.blit(config_text, (config_button_x + (button_width - config_text.get_width()) // 2, config_button_y + (button_height - config_text.get_height()) // 2))
 
 # Deshabilitado mientras desarrollo el juego
-pygame.mixer.music.load('./src/sound/sound_main.mp3')
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.load('./src/sound/sound_main.mp3')
+# pygame.mixer.music.play(-1)
 
 pygame.display.flip()
 
