@@ -1,75 +1,64 @@
-import pygame
-import sys
 import socket
+import pygame
+from pygame.locals import *
+import json
 
-BACKGROUND_COLOR = (0, 0, 0)
-SCREEN_SIZE = (800, 400)
-PLAYER_SPEED = 1
-FPS = 60
-
-pygame.init()
-
-ventana = pygame.display.set_mode(SCREEN_SIZE)
-pygame.display.set_caption('Juego de Nave')
-
-player_image = pygame.image.load('./src/img/nave.png')
-player_image = pygame.transform.scale(player_image, (50, 30))
-
-player_rect = player_image.get_rect()
-
-clock = pygame.time.Clock()
+server_ip = 'localhost'
+server_port = 12345
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('localhost', 5555))
+client.connect((server_ip, server_port))
 
-other_player_x, other_player_y = 0, 0
-running = True
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+clock = pygame.time.Clock()
 
-while running:
-    ventana.fill(BACKGROUND_COLOR)
+estado_jugador = {'x': 400, 'y': 300}
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
-            sys.exit()
+estado_global = {}
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        player_rect.x -= PLAYER_SPEED
-    if keys[pygame.K_RIGHT]:
-        player_rect.x += PLAYER_SPEED
-    if keys[pygame.K_UP]:
-        player_rect.y -= PLAYER_SPEED
-    if keys[pygame.K_DOWN]:
-        player_rect.y += PLAYER_SPEED
+def actualizar_estado():
+    global estado_global
+    data = client.recv(1024)
+    if data:
+        estado_global = json.loads(data.decode())
 
-    try:
-        position_message = f'{player_rect.x},{player_rect.y}'
-        client.send(position_message.encode())
-    except BrokenPipeError:
-        print("La conexión con el servidor se ha perdido.")
-        client.close()
-        running = False
-        continue
+def enviar_movimiento():
+    client.send(json.dumps(estado_jugador).encode())
 
-    try:
-        other_player_position = client.recv(1024).decode()
-        if other_player_position:
-            print(f"Recibida posición de otro jugador: {other_player_position}")
-            other_player_x, other_player_y = map(int, other_player_position.split(','))
-    except Exception as e:
-        print(f"Error al recibir datos del servidor: {e}")
+def main():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+        
+        keys = pygame.key.get_pressed()
+        
+        if keys[K_LEFT]:
+            estado_jugador['x'] -= 5
+        if keys[K_RIGHT]:
+            estado_jugador['x'] += 5
+        if keys[K_UP]:
+            estado_jugador['y'] -= 5
+        if keys[K_DOWN]:
+            estado_jugador['y'] += 5
 
-    ventana.blit(player_image, player_rect)
+        enviar_movimiento()
 
-    other_player_rect = player_image.get_rect(topleft=(other_player_x, other_player_y))
-    ventana.blit(player_image, other_player_rect)
+        actualizar_estado()
 
-    pygame.display.flip()
+        screen.fill((0, 0, 0))
 
-    clock.tick(FPS)
+        for id_jugador, pos in estado_global.items():
+            pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
 
+        pygame.display.update()
 
-pygame.quit()
-sys.exit()
+        clock.tick(60)
+
+    client.close()
+    pygame.quit()
+
+if __name__ == '__main__':
+    main()

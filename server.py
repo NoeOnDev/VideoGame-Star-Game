@@ -1,50 +1,52 @@
 import socket
 import threading
+import json
 
-class Server:
-    def __init__(self, host='localhost', port=5555):
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((host, port))
-        self.server.listen()
-        self.clients = []
-        self.positions = {}
+server_ip = 'localhost'
+server_port = 12345
 
-    def broadcast(self, message, client):
-        for c in self.clients:
-            if c != client:
-                try:
-                    c.send(message)
-                except BrokenPipeError:
-                    print(f"Error enviando mensaje a un cliente. Cliente desconectado.")
-                    c.close()
-                    self.clients.remove(c)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind((server_ip, server_port))
+server.listen(2)
 
-    def handle(self, client):
+clientes = []
+
+estado_global = {}
+
+def manejar_cliente(cliente, id_jugador):
+    global estado_global
+    try:
         while True:
-            try:
-                position = client.recv(1024)
-                if not position:
-                    print(f"Cliente {client} se ha desconectado.")
-                    self.clients.remove(client)
-                    client.close()
-                    break
-                
-                self.positions[client] = position
-                print(f"Recibida posición de cliente: {position.decode()}")
-                self.broadcast(position, client)
-            except Exception as e:
-                print(f"Error manejando cliente {client}: {e}")
-                self.clients.remove(client)
-                client.close()
+            datos = cliente.recv(1024)
+            if not datos:
                 break
 
-    def run(self):
-        while True:
-            client, addr = self.server.accept()
-            self.clients.append(client)
-            print(f'Conexión establecida con {str(addr)}')
-            thread = threading.Thread(target=self.handle, args=(client,))
-            thread.start()
+            movimiento = json.loads(datos.decode())
 
-server = Server()
-server.run()
+            estado_global[id_jugador] = movimiento
+
+            for c in clientes:
+                if c != cliente:
+                    c.send(json.dumps(estado_global).encode())
+    except (ConnectionResetError, BrokenPipeError):
+        print(f"Error en la conexión con el cliente {id_jugador}. Desconectando.")
+    finally:
+        cliente.close()
+        clientes.remove(cliente)
+
+
+def aceptar_clientes():
+    id_jugador = 0
+    while True:
+        cliente, addr = server.accept()
+        print(f"Conexión desde {addr}")
+        
+        estado_global[id_jugador] = {'x': 400, 'y': 300}
+        
+        clientes.append(cliente)
+        
+        threading.Thread(target=manejar_cliente, args=(cliente, id_jugador)).start()
+        
+        id_jugador += 1
+
+aceptar_clientes()
