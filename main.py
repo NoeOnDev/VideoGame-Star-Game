@@ -77,6 +77,25 @@ screen.blit(config_text, (config_button_x + (button_width - config_text.get_widt
 
 pygame.display.flip()
 
+def draw_main_home():
+    screen.blit(background, (0, 0))
+
+    pygame.draw.rect(screen, border_color, pygame.Rect(start_button_x - border_width, start_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
+    pygame.draw.rect(screen, start_button_color, pygame.Rect(start_button_x, start_button_y, button_width, button_height))
+
+    pygame.draw.rect(screen, border_color, pygame.Rect(config_button_x - border_width, config_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
+    pygame.draw.rect(screen, config_button_color, pygame.Rect(config_button_x, config_button_y, button_width, button_height))
+
+    pygame.draw.rect(screen, border_color, pygame.Rect(exit_button_x - border_width, exit_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
+    pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
+
+    screen.blit(game_name_text, (game_name_x, game_name_y))
+    screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
+    screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
+    screen.blit(config_text, (config_button_x + (button_width - config_text.get_width()) // 2, config_button_y + (button_height - config_text.get_height()) // 2))
+
+    pygame.display.flip()
+
 is_modal_open = False
 volume_up_button = None
 volume_down_button = None
@@ -239,7 +258,7 @@ def start_game():
                     if retry_button.collidepoint(event.pos):
                         start_game()
                     elif menu_button.collidepoint(event.pos):
-                        
+                        draw_main_home()
                         pass
                     elif quit_button.collidepoint(event.pos):
                         pygame.quit()
@@ -339,6 +358,7 @@ while True:
                     pygame.mixer.music.set_volume(0)
                 elif close_button.collidepoint(x, y):
                     is_modal_open = False
+                    draw_main_home()
             else:
                 if start_button_x <= x <= start_button_x + button_width and start_button_y <= y <= start_button_y + button_height:
                     print("Iniciar juego")
