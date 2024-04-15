@@ -78,12 +78,10 @@ pygame.mixer.music.play(-1)
 pygame.display.flip()
 
 is_modal_open = False
-
 volume_up_button = None
 volume_down_button = None
 mute_button = None
-
-close_button = is_modal_open
+close_button = None
 
 def draw_modal_home():
     global is_modal_open, volume_up_button, volume_down_button, mute_button, close_button
