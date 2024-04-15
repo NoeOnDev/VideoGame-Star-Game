@@ -259,7 +259,6 @@ def start_game():
                         start_game()
                     elif menu_button.collidepoint(event.pos):
                         draw_main_home()
-                        pass
                     elif quit_button.collidepoint(event.pos):
                         pygame.quit()
                         sys.exit()
