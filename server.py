@@ -21,9 +21,8 @@ def manejar_cliente(cliente, id_jugador):
             if not datos:
                 break
 
-            # Divide el mensaje por el carácter de nueva línea y decodifica cada línea por separado
             for line in datos.decode().split('\n'):
-                if line:  # Ignora las líneas vacías
+                if line:
                     movimiento = json.loads(line)
 
                     estado_global[id_jugador] = movimiento
@@ -35,6 +34,9 @@ def manejar_cliente(cliente, id_jugador):
     finally:
         cliente.close()
         clientes.remove(cliente)
+        if id_jugador in estado_global:
+            del estado_global[id_jugador]
+            print(f"Jugador {id_jugador} ha sido eliminado.")
 
 def aceptar_clientes():
     id_jugador = 0
