@@ -353,7 +353,7 @@ def start_game():
                 show_game_over_modal()
 
         pygame.display.flip()
-        
+
 def start_game_multiplayer():
     server_ip = '44.196.162.180'  # La dirección IP del servidor
     server_port = 9009  # El puerto del servidor
@@ -368,6 +368,8 @@ def start_game_multiplayer():
 
     estado_jugador = {'x': 0, 'y': 0}
     estado_global = {}
+    
+    id_jugador = int(client.recv(1024).decode())
 
     # Inicializar Pygame
     pygame.init()
@@ -516,10 +518,10 @@ def start_game_multiplayer():
             game_screen.blit(meteor['image'], (meteor['x'], meteor['y']))
 
         # Dibuja los jugadores conectados
-        for id_jugador, pos in estado_global.items():
-            if id_jugador != estado_jugador:  # No dibujar al jugador mismo
+        for id, pos in estado_global.items():
+            if id != id_jugador:  # No dibujar al jugador mismo
                 game_screen.blit(player_image, (pos['x'], pos['y']))
-                gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
+                gamertag = font.render(f'Player {id}', True, (255, 255, 255))
                 game_screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
         # Mostrar botón de inicio si el juego no ha comenzado

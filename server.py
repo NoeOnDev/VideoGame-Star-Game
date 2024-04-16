@@ -48,6 +48,9 @@ def aceptar_clientes():
         
         clientes.append(cliente)
         
+        # Enviar el ID del jugador al cliente
+        cliente.send(str(id_jugador).encode())
+        
         threading.Thread(target=manejar_cliente, args=(cliente, id_jugador)).start()
         
         id_jugador += 1
