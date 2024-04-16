@@ -21,6 +21,9 @@ def actualizar_estado():
     global estado_global
     data = client.recv(1024)
     if data:
+        for line in data.decode().split('\n'):
+            if line:
+                estado_global = json.loads(line)
         estado_global = json.loads(data.decode())
 
 def enviar_movimiento():

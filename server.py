@@ -15,20 +15,23 @@ estado_global = {}
 
 def manejar_cliente(cliente, id_jugador):
     global estado_global
-    while True:
-        datos = cliente.recv(1024)
-        if not datos:
-            break
+    try:
+        while True:
+            datos = cliente.recv(1024)
+            if not datos:
+                break
 
-        movimiento = json.loads(datos.decode())
+            movimiento = json.loads(datos.decode())
 
-        estado_global[id_jugador] = movimiento
-        
-        for c in clientes:
-            c.send(json.dumps(estado_global).encode())
-    
-    cliente.close()
-    clientes.remove(cliente)
+            estado_global[id_jugador] = movimiento
+            
+            for c in clientes:
+                c.send((json.dumps(estado_global) + '\n').encode())
+    except ConnectionResetError:
+        print("La conexión con el cliente ha sido cerrada inesperadamente.")
+    finally:
+        cliente.close()
+        clientes.remove(cliente)
 
 def aceptar_clientes():
     id_jugador = 0
