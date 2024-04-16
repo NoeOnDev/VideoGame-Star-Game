@@ -3,8 +3,8 @@ import pygame
 from pygame.locals import *
 import json
 
-server_ip = 'localhost'
-server_port = 12345
+server_ip = '44.196.162.180'
+server_port = 9009
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((server_ip, server_port))
