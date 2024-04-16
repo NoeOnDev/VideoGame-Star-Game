@@ -13,6 +13,9 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
 
+# Crea una fuente para dibujar el gamertag
+font = pygame.font.Font(None, 24)
+
 estado_jugador = {'x': 400, 'y': 300}
 
 estado_global = {}
@@ -54,6 +57,10 @@ def main():
 
         for id_jugador, pos in estado_global.items():
             pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
+            
+            # Crea una superficie con el gamertag y la dibuja en la pantalla
+            gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
+            screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
         pygame.display.update()
 
