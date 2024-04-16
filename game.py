@@ -26,7 +26,7 @@ def actualizar_estado():
                 estado_global = json.loads(line)
 
 def enviar_movimiento():
-    client.send(json.dumps(estado_jugador).encode())
+    client.send((json.dumps(estado_jugador) + '\n').encode())
 
 def main():
     running = True

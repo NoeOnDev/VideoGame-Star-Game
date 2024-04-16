@@ -21,12 +21,15 @@ def manejar_cliente(cliente, id_jugador):
             if not datos:
                 break
 
-            movimiento = json.loads(datos.decode())
+            # Divide el mensaje por el carácter de nueva línea y decodifica cada línea por separado
+            for line in datos.decode().split('\n'):
+                if line:  # Ignora las líneas vacías
+                    movimiento = json.loads(line)
 
-            estado_global[id_jugador] = movimiento
-            
-            for c in clientes:
-                c.send((json.dumps(estado_global) + '\n').encode())
+                    estado_global[id_jugador] = movimiento
+                    
+                    for c in clientes:
+                        c.send((json.dumps(estado_global) + '\n').encode())
     except ConnectionResetError:
         print("La conexión con el cliente ha sido cerrada inesperadamente.")
     finally:
