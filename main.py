@@ -1,7 +1,4 @@
 import pygame
-from pygame.locals import *
-import socket
-import json
 import sys
 import random
 
@@ -22,7 +19,6 @@ volume_down_image = pygame.image.load('./src/img/volume_down.png')
 mute_image = pygame.image.load('./src/img/mute.png')
 
 start_button_color = (0, 255, 19)
-multiplayer_button_color = (81, 226, 255)
 config_button_color = (109, 109, 255)
 exit_button_color = (255, 0, 0)
 volume_up_button_color = (255, 255, 0)
@@ -31,22 +27,19 @@ mute_button_color = (255, 0, 0)
 border_color = (23, 23, 23)
 
 button_width = 180
-button_height = 55
+button_height = 60
 button_volume_width = 40
 button_volume_height = 40
 border_width = 5
 
 start_button_x = window_main_width / 2 - button_width / 2
-start_button_y = window_main_height / 2 - button_height / 2 - 50
-
-multiplayer_button_x = window_main_width / 2 - button_width / 2
-multiplayer_button_y = start_button_y + button_height + 10
+start_button_y = window_main_height / 2 - button_height / 2 - 30
 
 exit_button_x = window_main_width / 2 - button_width / 2
-exit_button_y = start_button_y + button_height + 133
+exit_button_y = start_button_y + button_height + 90
 
 config_button_x = window_main_width / 2 - button_width / 2
-config_button_y = (start_button_y + exit_button_y) / 2 - button_height + 90
+config_button_y = (start_button_y + exit_button_y) / 2 - button_height + 60
 
 screen.blit(background, (0, 0))
 
@@ -59,15 +52,11 @@ pygame.draw.rect(screen, config_button_color, pygame.Rect(config_button_x, confi
 pygame.draw.rect(screen, border_color, pygame.Rect(exit_button_x - border_width, exit_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
 pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
 
-pygame.draw.rect(screen, border_color, pygame.Rect(multiplayer_button_x - border_width, multiplayer_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
-pygame.draw.rect(screen, multiplayer_button_color, pygame.Rect(multiplayer_button_x, multiplayer_button_y, button_width, button_height))
-
 font = pygame.font.Font(None, 40)
 
 start_text = font.render('Play', True, (0, 0, 0))
 exit_text = font.render('Exit', True, (0, 0, 0))
 config_text = font.render('Settings', True, (0, 0, 0))
-multiplayer_text = font.render('Multiplayer', True, (0, 0, 0))
 
 volume_up_image = pygame.transform.scale(volume_up_image, (button_volume_width, button_volume_height))
 volume_down_image = pygame.transform.scale(volume_down_image, (button_volume_width, button_volume_height))
@@ -81,7 +70,6 @@ screen.blit(game_name_text, (game_name_x, game_name_y))
 screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
 screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
 screen.blit(config_text, (config_button_x + (button_width - config_text.get_width()) // 2, config_button_y + (button_height - config_text.get_height()) // 2))
-screen.blit(multiplayer_text, (multiplayer_button_x + (button_width - multiplayer_text.get_width()) // 2, multiplayer_button_y + (button_height - multiplayer_text.get_height()) // 2))
 
 # Deshabilitado mientras desarrollo el juego
 # pygame.mixer.music.load('./src/sound/sound_main.mp3')
@@ -100,16 +88,12 @@ def draw_main_home():
 
     pygame.draw.rect(screen, border_color, pygame.Rect(exit_button_x - border_width, exit_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
     pygame.draw.rect(screen, exit_button_color, pygame.Rect(exit_button_x, exit_button_y, button_width, button_height))
-    
-    pygame.draw.rect(screen, border_color, pygame.Rect(multiplayer_button_x - border_width, multiplayer_button_y - border_width, button_width + 2 * border_width, button_height + 2 * border_width))
-    pygame.draw.rect(screen, multiplayer_button_color, pygame.Rect(multiplayer_button_x, multiplayer_button_y, button_width, button_height))
 
     screen.blit(game_name_text, (game_name_x, game_name_y))
     screen.blit(start_text, (start_button_x + (button_width - start_text.get_width()) // 2, start_button_y + (button_height - start_text.get_height()) // 2))
     screen.blit(exit_text, (exit_button_x + (button_width - exit_text.get_width()) // 2, exit_button_y + (button_height - exit_text.get_height()) // 2))
     screen.blit(config_text, (config_button_x + (button_width - config_text.get_width()) // 2, config_button_y + (button_height - config_text.get_height()) // 2))
-    screen.blit(multiplayer_text, (multiplayer_button_x + (button_width - multiplayer_text.get_width()) // 2, multiplayer_button_y + (button_height - multiplayer_text.get_height()) // 2))
-    
+
     pygame.display.flip()
 
 is_modal_open = False
@@ -354,209 +338,6 @@ def start_game():
 
         pygame.display.flip()
 
-def start_game_multiplayer():
-    server_ip = '44.196.162.180'  # La dirección IP del servidor
-    server_port = 9009  # El puerto del servidor
-
-    # Configuración de red
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        client.connect((server_ip, server_port))
-    except socket.error as e:
-        print(f"Error al conectar con el servidor: {e}")
-        return
-
-    estado_jugador = {'x': 0, 'y': 0}
-    estado_global = {}
-    
-    id_jugador = int(client.recv(1024).decode())
-
-    # Inicializar Pygame
-    pygame.init()
-    pygame.font.init()
-
-    # Configuración de la ventana de juego
-    game_window_width = 850
-    game_window_height = 531
-    game_screen = pygame.display.set_mode((game_window_width, game_window_height))
-    pygame.display.set_caption("My Star - Game")
-
-    # Configuración de fuente
-    font = pygame.font.Font(None, 24)
-    player_name = "Player"
-    text = font.render(player_name, True, (255, 255, 255))
-
-    clock = pygame.time.Clock()
-
-    # Cargar imágenes
-    background_image = pygame.image.load('./src/img/space.jpg')
-    background_image = pygame.transform.scale(background_image, (game_window_width, game_window_height))
-
-    base_image = pygame.image.load('./src/img/base.png')
-    base_width = 76
-    base_height = 71
-    base_image = pygame.transform.scale(base_image, (base_width, base_height))
-    base_x = game_window_width - base_width
-    base_y = game_window_height - base_height
-    base_mask = pygame.mask.from_surface(base_image)
-
-    player_image = pygame.image.load('./src/img/nave.png')
-    player_width = 40
-    player_height = 25
-    player_image = pygame.transform.scale(player_image, (player_width, player_height))
-    player_x = 0
-    player_y = (game_window_height - player_height) / 2
-    player_mask = pygame.mask.from_surface(player_image)
-
-    meteor_sizes = [(50, 50), (30, 30), (70, 70)]
-    meteors = []
-    for _ in range(random.randint(24, 26)):
-        size = random.choice(meteor_sizes)
-        meteor_image = pygame.image.load('./src/img/asteroide.png')
-        meteor_image = pygame.transform.scale(meteor_image, size)
-        meteor_x = random.randint(game_window_width // 2, game_window_width - size[0])
-        meteor_y = random.randint(0, game_window_height - size[1])
-        meteor_mask = pygame.mask.from_surface(meteor_image)
-        meteor_speed = random.randint(1, 3)
-        meteors.append({
-            'image': meteor_image,
-            'x': meteor_x,
-            'y': meteor_y,
-            'mask': meteor_mask,
-            'width': size[0],
-            'height': size[1],
-            'speed': meteor_speed
-        })
-
-    player_speed = 10
-    move_left = move_right = move_up = move_down = False
-
-    # Botón de inicio
-    start_button = pygame.Rect(game_window_width // 2 - 50, game_window_height // 2 - 25, 100, 50)
-    start_button_text = font.render('Inicializar', True, (0, 0, 0))
-    text_width, text_height = start_button_text.get_size()
-
-    text_x = start_button.x + (start_button.width - text_width) // 2
-    text_y = start_button.y + (start_button.height - text_height) // 2
-
-    game_started = False
-    initial_player_x = 0
-    initial_player_y = (game_window_height - player_height) / 2
-
-    def enviar_movimiento():
-        try:
-            client.send((json.dumps(estado_jugador) + '\n').encode())
-        except BrokenPipeError:
-            print("Error de conexión: El servidor puede estar caído o la conexión se cerró.")
-
-    def actualizar_estado():
-        global estado_global
-        try:
-            data = client.recv(1024)
-            if data:
-                for line in data.decode().split('\n'):
-                    if line:
-                        estado_global = json.loads(line)
-        except (ConnectionResetError, json.JSONDecodeError):
-            print("Error de conexión o datos inválidos recibidos del servidor.")
-
-    # Bucle principal del juego
-    while True:
-        clock.tick(120)
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    move_left = True
-                elif event.key == pygame.K_RIGHT:
-                    move_right = True
-                elif event.key == pygame.K_UP:
-                    move_up = True
-                elif event.key == pygame.K_DOWN:
-                    move_down = True
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    move_left = False
-                elif event.key == pygame.K_RIGHT:
-                    move_right = False
-                elif event.key == pygame.K_UP:
-                    move_up = False
-                elif event.key == pygame.K_DOWN:
-                    move_down = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if start_button.collidepoint(event.pos):
-                    game_started = True
-                    estado_jugador['x'] = initial_player_x
-                    estado_jugador['y'] = initial_player_y
-
-        # Actualizar estado del jugador
-        if move_left:
-            estado_jugador['x'] -= player_speed
-        if move_right:
-            estado_jugador['x'] += player_speed
-        if move_up:
-            estado_jugador['y'] -= player_speed
-        if move_down:
-            estado_jugador['y'] += player_speed
-
-        # Enviar movimiento del jugador
-        enviar_movimiento()
-
-        # Actualizar estado global desde el servidor
-        actualizar_estado()
-
-        # Dibuja el fondo, jugador, base, meteors y otros elementos del juego
-        game_screen.blit(background_image, (0, 0))
-        game_screen.blit(base_image, (base_x, base_y))
-        game_screen.blit(player_image, (estado_jugador['x'], estado_jugador['y']))
-        game_screen.blit(text, (estado_jugador['x'], estado_jugador['y'] - 24))
-
-        for meteor in meteors:
-            game_screen.blit(meteor['image'], (meteor['x'], meteor['y']))
-
-        # Dibuja los jugadores conectados
-        for id, pos in estado_global.items():
-            if id != id_jugador:  # No dibujar al jugador mismo
-                game_screen.blit(player_image, (pos['x'], pos['y']))
-                gamertag = font.render(f'Player {id}', True, (255, 255, 255))
-                game_screen.blit(gamertag, (pos['x'], pos['y'] - 20))
-
-        # Mostrar botón de inicio si el juego no ha comenzado
-        if not game_started:
-            pygame.draw.rect(game_screen, (255, 255, 255), start_button)
-            game_screen.blit(start_button_text, (text_x, text_y))
-
-        # Mover meteors si el juego ha comenzado
-        if game_started:
-            for meteor in meteors:
-                meteor['x'] -= meteor['speed']
-                if meteor['x'] + meteor['width'] < 0:
-                    meteor['x'] = game_window_width
-                    meteor['y'] = random.randint(0, game_window_height - meteor['height'])
-
-        # Verificar colisión del jugador con la base
-        offset_x_base = base_x - estado_jugador['x']
-        offset_y_base = base_y - estado_jugador['y']
-        if player_mask.overlap(base_mask, (offset_x_base, offset_y_base)):
-            print("Fin del juego")
-            pygame.quit()
-            sys.exit()
-
-        # Verificar colisión del jugador con los meteors
-        for meteor in meteors:
-            offset_x_meteor = meteor['x'] - estado_jugador['x']
-            offset_y_meteor = meteor['y'] - estado_jugador['y']
-            if player_mask.overlap(meteor['mask'], (offset_x_meteor, offset_y_meteor)):
-                print("Perdiste")
-                # Mostrar pantalla de fin de juego (puedes implementar esto según tus necesidades)
-                # show_game_over_modal_multiplayer()
-                pass
-
-        pygame.display.update()
-        
 while True:
     events = pygame.event.get()
     for event in events:
@@ -582,9 +363,6 @@ while True:
                     print("Iniciar juego")
                     pygame.mixer.music.stop()
                     start_game()
-                elif multiplayer_button_x <= x <= multiplayer_button_x + button_width and multiplayer_button_y <= y <= multiplayer_button_y + button_height:
-                    print("Multijugador")
-                    start_game_multiplayer()
                 elif config_button_x <= x <= config_button_x + button_width and config_button_y <= y <= config_button_y + button_height:
                     print("Configuración")
                     draw_modal_home()
