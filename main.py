@@ -408,7 +408,11 @@ def start_game_muliplayer():
     move_left = move_right = move_up = move_down = False
 
     start_button = pygame.Rect(game_window_width // 2 - 50, game_window_height // 2 - 25, 100, 50)
-    start_button_text = font.render('Iniciar', True, (0, 0, 0))
+    start_button_text = font.render('Inicializar', True, (0, 0, 0))
+    text_width, text_height = start_button_text.get_size()
+
+    text_x = start_button.x + (start_button.width - text_width) // 2
+    text_y = start_button.y + (start_button.height - text_height) // 2
     game_started = False
     
     initial_player_x = 0
@@ -475,7 +479,7 @@ def start_game_muliplayer():
 
         if not game_started:
             pygame.draw.rect(game_screen, (255, 255, 255), start_button)
-            game_screen.blit(start_button_text, (start_button.x + 20, start_button.y + 10))
+            game_screen.blit(start_button_text, (text_x, text_y))
 
         offset_x_base = base_x - player_x
         offset_y_base = base_y - player_y
