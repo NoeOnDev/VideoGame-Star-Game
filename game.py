@@ -24,7 +24,6 @@ def actualizar_estado():
         for line in data.decode().split('\n'):
             if line:
                 estado_global = json.loads(line)
-        estado_global = json.loads(data.decode())
 
 def enviar_movimiento():
     client.send(json.dumps(estado_jugador).encode())
