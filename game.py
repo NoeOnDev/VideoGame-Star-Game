@@ -19,9 +19,6 @@ estado_jugador = {'x': 400, 'y': 300}
 
 estado_global = {}
 
-nave_imagen = pygame.image.load('./src/img/nave.png')
-nave_mask = pygame.mask.from_surface(nave_imagen)
-
 def actualizar_estado():
     global estado_global
     data = client.recv(1024)
@@ -60,12 +57,12 @@ def main():
         cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
 
         for id_jugador, pos in estado_global.items():
-            jugador = screen.blit(nave_imagen, (pos['x'], pos['y']))
-
+            jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
+            
             gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
             screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
-            if nave_mask.overlap(nave_mask, (pos['x'] - estado_jugador['x'], pos['y'] - estado_jugador['y'])):
+            if jugador.colliderect(cuadro_verde):
                 print(f'Player {id_jugador} ha colisionado')
 
         pygame.display.update()

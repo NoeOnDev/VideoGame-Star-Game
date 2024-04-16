@@ -36,7 +36,7 @@ def manejar_cliente(cliente, id_jugador):
         clientes.remove(cliente)
         if id_jugador in estado_global:
             del estado_global[id_jugador]
-            print(f"Jugador {id_jugador} ha sido eliminado.")
+            print(f"Player {id_jugador} ha sido eliminado")
 
 def aceptar_clientes():
     id_jugador = 0
