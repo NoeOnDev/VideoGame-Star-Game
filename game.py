@@ -19,7 +19,6 @@ estado_jugador = {'x': 400, 'y': 300}
 
 estado_global = {}
 
-# Cargar la imagen de la nave
 nave_imagen = pygame.image.load('./src/img/nave.png')
 nave_mask = pygame.mask.from_surface(nave_imagen)
 
@@ -61,13 +60,11 @@ def main():
         cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
 
         for id_jugador, pos in estado_global.items():
-            # Dibujar la imagen de la nave en lugar del rectángulo
             jugador = screen.blit(nave_imagen, (pos['x'], pos['y']))
 
             gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
             screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
-            # Comprobar la colisión usando las máscaras
             if nave_mask.overlap(nave_mask, (pos['x'] - estado_jugador['x'], pos['y'] - estado_jugador['y'])):
                 print(f'Player {id_jugador} ha colisionado')
 
