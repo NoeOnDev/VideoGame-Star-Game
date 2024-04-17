@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 
+# server_ip = '127.0.0.1'
 server_ip = '0.0.0.0'
 server_port = 9009
 
