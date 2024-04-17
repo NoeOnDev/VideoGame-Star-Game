@@ -39,13 +39,13 @@ def main():
         
         keys = pygame.key.get_pressed()
         
-        if keys[K_LEFT]:
+        if keys[K_LEFT] and estado_jugador['x'] > 0:
             estado_jugador['x'] -= 5
-        if keys[K_RIGHT]:
+        if keys[K_RIGHT] and estado_jugador['x'] < 780:  # 800 - 20 (ancho del jugador)
             estado_jugador['x'] += 5
-        if keys[K_UP]:
+        if keys[K_UP] and estado_jugador['y'] > 0:
             estado_jugador['y'] -= 5
-        if keys[K_DOWN]:
+        if keys[K_DOWN] and estado_jugador['y'] < 580:  # 600 - 20 (alto del jugador)
             estado_jugador['y'] += 5
 
         enviar_movimiento()
