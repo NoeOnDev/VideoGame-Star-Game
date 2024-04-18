@@ -45,7 +45,8 @@ async def manejar_cliente(cliente, id_jugador):
 
 async def generar_asteroides():
     while True:
-        if random.random() < 0.01:
+        jugadores_listos = all(jugador.get('listo', False) for jugador in estado_global['jugadores'].values())
+        if jugadores_listos and random.random() < 0.01:
             asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
             estado_global['asteroides'].append(asteroide)
         
