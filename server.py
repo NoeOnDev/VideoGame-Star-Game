@@ -34,20 +34,6 @@ async def manejar_cliente(cliente, id_jugador):
                     
                     for c in clientes:
                         await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
-        async def generar_asteroides():
-            while True:
-                if random.random() < 0.01:
-                    asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
-                    estado_global['asteroides'].append(asteroide)
-                
-                for asteroide in estado_global['asteroides']:
-                    asteroide['x'] -= asteroide['v']
-                
-                estado_global['asteroides'] = [asteroide for asteroide in estado_global['asteroides'] if asteroide['x'] > 0]
-                
-                await asyncio.sleep(1/60)
-
-        loop.create_task(generar_asteroides())
     except ConnectionResetError:
         print("La conexión con el cliente ha sido cerrada inesperadamente.")
     finally:
@@ -56,6 +42,19 @@ async def manejar_cliente(cliente, id_jugador):
         if id_jugador in estado_global:
             del estado_global[id_jugador]
             print(f"Player {id_jugador} ha sido eliminado")
+
+async def generar_asteroides():
+    while True:
+        if random.random() < 0.01:
+            asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
+            estado_global['asteroides'].append(asteroide)
+        
+        for asteroide in estado_global['asteroides']:
+            asteroide['x'] -= asteroide['v']
+        
+        estado_global['asteroides'] = [asteroide for asteroide in estado_global['asteroides'] if asteroide['x'] > 0]
+        
+        await asyncio.sleep(1/60)
 
 async def aceptar_clientes():
     id_jugador = 0
@@ -72,4 +71,5 @@ async def aceptar_clientes():
         id_jugador += 1
 
 loop = asyncio.get_event_loop()
+loop.create_task(generar_asteroides())
 loop.run_until_complete(aceptar_clientes())
