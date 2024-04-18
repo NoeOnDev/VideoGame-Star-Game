@@ -30,13 +30,13 @@ async def manejar_cliente(cliente, id_jugador):
                 if line:
                     movimiento = json.loads(line)
 
-                    estado_global[id_jugador] = movimiento
+                    estado_global['jugadores'][id_jugador] = movimiento
                     
                     for c in clientes:
                         await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
         async def generar_asteroides():
             while True:
-                if random.random() < 0.01:  # 1% de probabilidad por frame
+                if random.random() < 0.01:
                     asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
                     estado_global['asteroides'].append(asteroide)
                 
@@ -45,7 +45,7 @@ async def manejar_cliente(cliente, id_jugador):
                 
                 estado_global['asteroides'] = [asteroide for asteroide in estado_global['asteroides'] if asteroide['x'] > 0]
                 
-                await asyncio.sleep(1/60)  # Espera un frame
+                await asyncio.sleep(1/60)
 
         loop.create_task(generar_asteroides())
     except ConnectionResetError:
@@ -63,7 +63,7 @@ async def aceptar_clientes():
         cliente, addr = await loop.sock_accept(server)
         print(f"Conexión desde {addr}")
         
-        estado_global[id_jugador] = {'x': 400, 'y': 300, 'listo': False}
+        estado_global['jugadores'][id_jugador] = {'x': 400, 'y': 300, 'listo': False}
         
         clientes.append(cliente)
         
