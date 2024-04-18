@@ -1,6 +1,5 @@
 import socket
 import pygame
-import random
 from pygame.locals import *
 import json
 

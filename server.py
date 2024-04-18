@@ -39,16 +39,18 @@ async def manejar_cliente(cliente, id_jugador):
     finally:
         cliente.close()
         clientes.remove(cliente)
-        if id_jugador in estado_global:
-            del estado_global[id_jugador]
+        if id_jugador in estado_global['jugadores']:
+            del estado_global['jugadores'][id_jugador]
             print(f"Player {id_jugador} ha sido eliminado")
 
 async def generar_asteroides():
     while True:
-        jugadores_listos = all(jugador.get('listo', False) for jugador in estado_global['jugadores'].values())
-        if jugadores_listos and random.random() < 0.01:
-            asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
-            estado_global['asteroides'].append(asteroide)
+        jugadores_listos = all(jugador.get('ready', False) for jugador in estado_global['jugadores'].values())
+        if jugadores_listos:
+            await asyncio.sleep(2)
+            if random.random() < 0.01:
+                asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
+                estado_global['asteroides'].append(asteroide)
         
         for asteroide in estado_global['asteroides']:
             asteroide['x'] -= asteroide['v']
@@ -63,7 +65,7 @@ async def aceptar_clientes():
         cliente, addr = await loop.sock_accept(server)
         print(f"Conexión desde {addr}")
         
-        estado_global['jugadores'][id_jugador] = {'x': 400, 'y': 300, 'listo': False}
+        estado_global['jugadores'][id_jugador] = {'x': 400, 'y': 300, 'ready': False}
         
         clientes.append(cliente)
         
