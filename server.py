@@ -45,7 +45,7 @@ async def aceptar_clientes():
         cliente, addr = await loop.sock_accept(server)
         print(f"Conexión desde {addr}")
         
-        estado_global[id_jugador] = {'x': 400, 'y': 300}
+        estado_global[id_jugador] = {'x': 400, 'y': 300, 'listo': False}
         
         clientes.append(cliente)
         

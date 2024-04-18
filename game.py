@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 
 font = pygame.font.Font(None, 24)
 
-estado_jugador = {'x': 400, 'y': 300}
+estado_jugador = {'x': 400, 'y': 300, 'ready': False}
 
 estado_global = {}
 
@@ -38,6 +38,9 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            elif event.type == KEYDOWN and event.key == K_SPACE:
+                estado_jugador['ready'] = not estado_jugador['ready']
+                enviar_movimiento()
         
         keys = pygame.key.get_pressed()
         
@@ -66,6 +69,16 @@ def main():
 
             if jugador.colliderect(cuadro_verde):
                 print(f'Player {id_jugador} ha colisionado')
+
+        jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
+        total_jugadores = len(estado_global)
+        if jugadores_listos < total_jugadores:
+            mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
+        else:
+            mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
+
+        texto_mensaje = font.render(mensaje, True, (255, 255, 255))
+        screen.blit(texto_mensaje, (10, 10))
 
         pygame.display.update()
 
