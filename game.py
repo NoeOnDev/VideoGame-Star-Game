@@ -19,6 +19,8 @@ estado_jugador = {'x': 400, 'y': 300}
 
 estado_global = {}
 
+background = pygame.image.load('./src/img/space.jpg')
+
 def actualizar_estado():
     global estado_global
     data = client.recv(1024)
@@ -52,7 +54,7 @@ def main():
 
         actualizar_estado()
 
-        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
 
         cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
 
