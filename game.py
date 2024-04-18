@@ -58,20 +58,22 @@ def main():
         actualizar_estado()
 
         screen.blit(background, (0, 0))
-
-        cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
-
         for id_jugador, pos in estado_global.items():
             jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
             
             gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
             screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
-            if jugador.colliderect(cuadro_verde):
-                print(f'Player {id_jugador} ha colisionado')
-
         jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
         total_jugadores = len(estado_global)
+        
+        if jugadores_listos == total_jugadores:
+            cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
+            for id_jugador, pos in estado_global.items():
+                jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
+                if jugador.colliderect(cuadro_verde):
+                    print(f'Player {id_jugador} ha colisionado')
+        
         if jugadores_listos < total_jugadores:
             mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
         else:
