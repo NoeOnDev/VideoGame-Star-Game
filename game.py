@@ -32,7 +32,9 @@ def actualizar_estado():
         else:
             data += chunk
     if data:
-        estado_global = json.loads(data)
+        for message in data.split('END'):
+            if message:
+                estado_global = json.loads(message)
 
 def enviar_movimiento():
     client.send((json.dumps(estado_jugador) + '\n').encode())
