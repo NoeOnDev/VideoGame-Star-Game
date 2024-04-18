@@ -34,7 +34,6 @@ def enviar_movimiento():
     client.send((json.dumps(estado_jugador) + '\n').encode())
 
 def main():
-    asteroides = []
     running = True
     while running:
         for event in pygame.event.get():
@@ -69,21 +68,12 @@ def main():
         jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
         total_jugadores = len(estado_global)
         
-        if jugadores_listos == total_jugadores:
-            if random.random() < 0.01:  # 1% de probabilidad por frame
-                asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
-                asteroides.append(asteroide)
-            
-            for asteroide in asteroides:
-                asteroide['x'] -= asteroide['v']
-            
-            asteroides = [asteroide for asteroide in asteroides if asteroide['x'] > 0]
-            for asteroide in asteroides:
-                cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (asteroide['x'], asteroide['y'], 20, 20))
-                for id_jugador, pos in estado_global.items():
-                    jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
-                    if jugador.colliderect(cuadro_verde):
-                        print(f'Player {id_jugador} ha colisionado')
+        for asteroide in estado_global['asteroides']:
+            cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (asteroide['x'], asteroide['y'], 20, 20))
+            for id_jugador, pos in estado_global['jugadores'].items():
+                jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
+                if jugador.colliderect(cuadro_verde):
+                    print(f'Player {id_jugador} ha colisionado')
         
         if jugadores_listos < total_jugadores:
             mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'

@@ -1,6 +1,7 @@
 import socket
 import asyncio
 import json
+import random
 
 server_ip = '0.0.0.0'
 server_port = 9009
@@ -12,7 +13,10 @@ server.setblocking(False)
 
 clientes = []
 
-estado_global = {}
+estado_global = {
+    'jugadores': {},
+    'asteroides': []
+}
 
 async def manejar_cliente(cliente, id_jugador):
     global estado_global
@@ -30,6 +34,20 @@ async def manejar_cliente(cliente, id_jugador):
                     
                     for c in clientes:
                         await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
+        async def generar_asteroides():
+            while True:
+                if random.random() < 0.01:  # 1% de probabilidad por frame
+                    asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(1, 5)}
+                    estado_global['asteroides'].append(asteroide)
+                
+                for asteroide in estado_global['asteroides']:
+                    asteroide['x'] -= asteroide['v']
+                
+                estado_global['asteroides'] = [asteroide for asteroide in estado_global['asteroides'] if asteroide['x'] > 0]
+                
+                await asyncio.sleep(1/60)  # Espera un frame
+
+        loop.create_task(generar_asteroides())
     except ConnectionResetError:
         print("La conexión con el cliente ha sido cerrada inesperadamente.")
     finally:
