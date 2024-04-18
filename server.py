@@ -14,20 +14,6 @@ clientes = []
 
 estado_global = {}
 
-async def aceptar_clientes():
-    id_jugador = 0
-    while True:
-        cliente, addr = await loop.sock_accept(server)
-        print(f"Conexión desde {addr}")
-        
-        estado_global[id_jugador] = {'x': 400, 'y': 300, 'listo': False}
-        
-        clientes.append(cliente)
-        
-        loop.create_task(manejar_cliente(cliente, id_jugador))
-        
-        id_jugador += 1
-
 async def manejar_cliente(cliente, id_jugador):
     global estado_global
     try:
@@ -40,12 +26,8 @@ async def manejar_cliente(cliente, id_jugador):
                 if line:
                     movimiento = json.loads(line)
 
-                    if 'listo' in movimiento and movimiento['listo']:
-                        estado_global[id_jugador]['listo'] = True
-                    else:
-                        estado_global[id_jugador]['x'] = movimiento['x']
-                        estado_global[id_jugador]['y'] = movimiento['y']
-
+                    estado_global[id_jugador] = movimiento
+                    
                     for c in clientes:
                         await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
     except ConnectionResetError:
@@ -56,6 +38,20 @@ async def manejar_cliente(cliente, id_jugador):
         if id_jugador in estado_global:
             del estado_global[id_jugador]
             print(f"Player {id_jugador} ha sido eliminado")
+
+async def aceptar_clientes():
+    id_jugador = 0
+    while True:
+        cliente, addr = await loop.sock_accept(server)
+        print(f"Conexión desde {addr}")
+        
+        estado_global[id_jugador] = {'x': 400, 'y': 300}
+        
+        clientes.append(cliente)
+        
+        loop.create_task(manejar_cliente(cliente, id_jugador))
+        
+        id_jugador += 1
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(aceptar_clientes())
