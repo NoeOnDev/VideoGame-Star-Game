@@ -18,6 +18,8 @@ estado_global = {
     'asteroides': []
 }
 
+estado_global_lock = asyncio.Lock()
+
 async def manejar_cliente(cliente, id_jugador):
     global estado_global
     try:
@@ -30,10 +32,11 @@ async def manejar_cliente(cliente, id_jugador):
                 if line:
                     movimiento = json.loads(line)
 
-                    estado_global['jugadores'][id_jugador] = movimiento
+                    async with estado_global_lock:
+                        estado_global['jugadores'][id_jugador] = movimiento
                     
-                    for c in clientes:
-                        await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
+                        for c in clientes:
+                            await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
     except ConnectionResetError:
         print("La conexión con el cliente ha sido cerrada inesperadamente.")
     finally:
@@ -50,7 +53,9 @@ async def generar_asteroides():
             await asyncio.sleep(2)
             if random.random() < 0.5:
                 asteroide = {'x': 850, 'y': random.randint(0, 530), 'v': random.uniform(32, 48)}
-                estado_global['asteroides'].append(asteroide)
+                
+                async with estado_global_lock:
+                    estado_global['asteroides'].append(asteroide)
         
         for asteroide in estado_global['asteroides']:
             if jugadores_listos:
