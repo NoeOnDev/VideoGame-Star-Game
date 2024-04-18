@@ -23,9 +23,16 @@ background = pygame.image.load('./src/img/space.jpg')
 
 def actualizar_estado():
     global estado_global
-    data = client.recv(4096)
+    data = ''
+    while True:
+        chunk = client.recv(4096).decode()
+        if 'END' in chunk:
+            data += chunk[:chunk.index('END')]
+            break
+        else:
+            data += chunk
     if data:
-        for line in data.decode().split('\n'):
+        for line in data.split('\n'):
             if line:
                 estado_global = json.loads(line)
 

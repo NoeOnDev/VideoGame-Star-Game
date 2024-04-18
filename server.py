@@ -36,7 +36,7 @@ async def manejar_cliente(cliente, id_jugador):
                         estado_global['jugadores'][id_jugador] = movimiento
                     
                         for c in clientes:
-                            await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
+                            await loop.sock_sendall(c, (json.dumps(estado_global) + '\nEND\n').encode())
     except ConnectionResetError:
         print("La conexión con el cliente ha sido cerrada inesperadamente.")
     finally:
