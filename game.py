@@ -23,7 +23,7 @@ background = pygame.image.load('./src/img/space.jpg')
 
 def actualizar_estado():
     global estado_global
-    data = client.recv(1024)
+    data = client.recv(4096)
     if data:
         for line in data.decode().split('\n'):
             if line:

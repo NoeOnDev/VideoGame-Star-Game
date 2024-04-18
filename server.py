@@ -22,7 +22,7 @@ async def manejar_cliente(cliente, id_jugador):
     global estado_global
     try:
         while True:
-            datos = await loop.sock_recv(cliente, 1024)
+            datos = await loop.sock_recv(cliente, 4096)
             if not datos:
                 break
 
@@ -49,7 +49,7 @@ async def generar_asteroides():
         if jugadores_listos:
             await asyncio.sleep(2)
             if random.random() < 0.5:
-                asteroide = {'x': 850, 'y': random.randint(0, 530), 'v': random.randint(3, 7)}
+                asteroide = {'x': 850, 'y': random.randint(0, 530), 'v': random.uniform(0.1, 0.5)}
                 estado_global['asteroides'].append(asteroide)
         
         for asteroide in estado_global['asteroides']:
