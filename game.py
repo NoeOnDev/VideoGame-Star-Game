@@ -10,7 +10,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((server_ip, server_port))
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((850, 531))
 clock = pygame.time.Clock()
 
 font = pygame.font.Font(None, 24)
@@ -43,11 +43,11 @@ def main():
         
         if keys[K_LEFT] and estado_jugador['x'] > 0:
             estado_jugador['x'] -= 5
-        if keys[K_RIGHT] and estado_jugador['x'] < 780:
+        if keys[K_RIGHT] and estado_jugador['x'] < 830:
             estado_jugador['x'] += 5
         if keys[K_UP] and estado_jugador['y'] > 0:
             estado_jugador['y'] -= 5
-        if keys[K_DOWN] and estado_jugador['y'] < 580:
+        if keys[K_DOWN] and estado_jugador['y'] < 510:
             estado_jugador['y'] += 5
 
         enviar_movimiento()
