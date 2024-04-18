@@ -49,7 +49,7 @@ async def generar_asteroides():
         if jugadores_listos:
             await asyncio.sleep(2)
             if random.random() < 0.5:
-                asteroide = {'x': 850, 'y': random.randint(0, 531), 'v': random.randint(3, 7)}
+                asteroide = {'x': 850, 'y': random.randint(0, 530), 'v': random.randint(3, 7)}
                 estado_global['asteroides'].append(asteroide)
         
         for asteroide in estado_global['asteroides']:
