@@ -39,6 +39,11 @@ def main():
         
         keys = pygame.key.get_pressed()
         
+        if keys[K_ESCAPE]:
+            estado_jugador['listo'] = True
+            enviar_movimiento()
+            estado_jugador['listo'] = False
+        
         if keys[K_LEFT] and estado_jugador['x'] > 0:
             estado_jugador['x'] -= 5
         if keys[K_RIGHT] and estado_jugador['x'] < 780:
@@ -61,6 +66,9 @@ def main():
             
             gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
             screen.blit(gamertag, (pos['x'], pos['y'] - 20))
+            
+            if 'listo' in pos and pos['listo']:
+                print(f'Player {id_jugador} está listo')
 
             if jugador.colliderect(cuadro_verde):
                 print(f'Player {id_jugador} ha colisionado')
