@@ -70,7 +70,7 @@ def main():
             if jugador.colliderect(cuadro_verde):
                 print(f'Player {id_jugador} ha colisionado')
 
-        jugadores_listos = sum(1 for jugador in estado_global.values() if jugador['ready'])
+        jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
         total_jugadores = len(estado_global)
         if jugadores_listos < total_jugadores:
             mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
