@@ -1,7 +1,6 @@
 import socket
 import asyncio
 import json
-import random
 
 server_ip = '0.0.0.0'
 server_port = 9009
@@ -13,18 +12,13 @@ server.setblocking(False)
 
 clientes = []
 
-estado_global = {
-    'jugadores': {},
-    'asteroides': []
-}
-
-estado_global_lock = asyncio.Lock()
+estado_global = {}
 
 async def manejar_cliente(cliente, id_jugador):
     global estado_global
     try:
         while True:
-            datos = await loop.sock_recv(cliente, 4096)
+            datos = await loop.sock_recv(cliente, 1024)
             if not datos:
                 break
 
@@ -32,40 +26,18 @@ async def manejar_cliente(cliente, id_jugador):
                 if line:
                     movimiento = json.loads(line)
 
-                    async with estado_global_lock:
-                        estado_global['jugadores'][id_jugador] = movimiento
+                    estado_global[id_jugador] = movimiento
                     
-                        for c in clientes:
-                            await loop.sock_sendall(c, (json.dumps(estado_global) + '\nEND\n').encode())
+                    for c in clientes:
+                        await loop.sock_sendall(c, (json.dumps(estado_global) + '\n').encode())
     except ConnectionResetError:
         print("La conexión con el cliente ha sido cerrada inesperadamente.")
     finally:
         cliente.close()
         clientes.remove(cliente)
-        if id_jugador in estado_global['jugadores']:
-            del estado_global['jugadores'][id_jugador]
+        if id_jugador in estado_global:
+            del estado_global[id_jugador]
             print(f"Player {id_jugador} ha sido eliminado")
-
-async def generar_asteroides():
-    while True:
-        jugadores_listos = all(jugador.get('ready', False) for jugador in estado_global['jugadores'].values())
-        if jugadores_listos:
-            await asyncio.sleep(2)
-            if random.random() < 0.5:
-                asteroide = {'x': 850, 'y': random.randint(0, 530), 'v': random.uniform(32, 48)}
-                
-                async with estado_global_lock:
-                    estado_global['asteroides'].append(asteroide)
-        
-        for asteroide in estado_global['asteroides']:
-            if jugadores_listos:
-                asteroide['x'] -= asteroide['v']
-            else:
-                estado_global['asteroides'] = []
-        
-        estado_global['asteroides'] = [asteroide for asteroide in estado_global['asteroides'] if asteroide['x'] > 0]
-        
-        await asyncio.sleep(1/120)
 
 async def aceptar_clientes():
     id_jugador = 0
@@ -73,7 +45,7 @@ async def aceptar_clientes():
         cliente, addr = await loop.sock_accept(server)
         print(f"Conexión desde {addr}")
         
-        estado_global['jugadores'][id_jugador] = {'x': 400, 'y': 300, 'ready': False}
+        estado_global[id_jugador] = {'x': 400, 'y': 300}
         
         clientes.append(cliente)
         
@@ -82,5 +54,4 @@ async def aceptar_clientes():
         id_jugador += 1
 
 loop = asyncio.get_event_loop()
-loop.create_task(generar_asteroides())
 loop.run_until_complete(aceptar_clientes())
