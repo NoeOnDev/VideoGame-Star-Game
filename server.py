@@ -18,7 +18,7 @@ async def manejar_cliente(cliente, id_jugador):
     global estado_global
     try:
         while True:
-            datos = await loop.sock_recv(cliente, 1024)
+            datos = await loop.sock_recv(cliente, 4096)
             if not datos:
                 break
 
