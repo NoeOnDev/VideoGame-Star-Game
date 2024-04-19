@@ -28,7 +28,7 @@ async def generar_meteoros():
 
     while True:
         if clientes and todos_listos and tiempo_restante > 0:
-            num_meteoros = random.choice([0, 0.5, 1])
+            num_meteoros = random.choice([0, 1, 1])
 
             for _ in range(int(num_meteoros)):
                 meteoro = {
