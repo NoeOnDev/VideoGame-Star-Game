@@ -35,7 +35,7 @@ async def actualizar_estado():
     while True:
         estado = json.dumps(estado_global)
         if clientes:
-            tareas = [cliente.send(estado) for cliente in clientes if cliente.open]
+            tareas = [asyncio.create_task(cliente.send(estado)) for cliente in clientes if cliente.open]
             if tareas:
                 await asyncio.wait(tareas)
         await asyncio.sleep(0.1)
