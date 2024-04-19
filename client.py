@@ -53,6 +53,9 @@ async def enviar_movimiento(websocket):
 
 async def main():
     global mensaje_ganador, mensaje_perdedor
+    mensaje_ganador = ''
+    mensaje_perdedor = ''
+
     async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
         running = True
         while running:
@@ -108,14 +111,14 @@ async def main():
                 ganador_text = font.render(mensaje_ganador, True, (255, 255, 255))
                 screen.blit(ganador_text, (425 - ganador_text.get_width() // 2, 265 - ganador_text.get_height() // 2))
                 pygame.display.update()
-                pygame.time.wait(4000)
+                pygame.time.wait(2000)
                 running = False
                 
             if mensaje_perdedor:
                 perdedor_text = font.render(mensaje_perdedor, True, (255, 255, 255))
                 screen.blit(perdedor_text, (425 - perdedor_text.get_width() // 2, 265 - perdedor_text.get_height() // 2))
                 pygame.display.update()
-                pygame.time.wait(4000)
+                pygame.time.wait(2000)
                 running = False
 
             pygame.display.update()
