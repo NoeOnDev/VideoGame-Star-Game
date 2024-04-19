@@ -1,91 +1,94 @@
-import pygame
-import pickle
 import asyncio
+import websockets
+import pygame
+from pygame.locals import *
+import json
+import time
+
+server_ip = '44.196.162.180'
+server_port = 9009
 
 pygame.init()
+screen = pygame.display.set_mode((850, 530))
+clock = pygame.time.Clock()
 
-WIDTH, HEIGHT = 850, 530
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Juego Multijugador")
+font = pygame.font.Font(None, 24)
 
-GREEN = (0, 255, 0)
+estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
-        self.image = pygame.Surface((25, 25))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = 5
+estado_global = {}
 
-    def update(self, keys):
-        if keys[pygame.K_LEFT]:
-            self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT]:
-            self.rect.x += self.speed
-        if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
-        if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
+background = pygame.image.load('./src/img/space.jpg')
 
-        self.rect.x = max(0, min(self.rect.x, WIDTH - self.rect.width))
-        self.rect.y = max(0, min(self.rect.y, HEIGHT - self.rect.height))
+async def actualizar_estado(websocket):
+    global estado_global
+    data = await websocket.recv()
+    if data:
+        estado_global = json.loads(data)
 
-async def handle_server_events(reader, writer, players):
-    try:
-        while True:
-            data = await reader.read(4096)
-            if not data:
-                break
-            message = pickle.loads(data)
-            print(f"Recibido: {message}")
-
-            if 'players' in message:
-                for player_data in message['players']:
-                    player_id = player_data['id']
-                    player_pos = player_data['pos']
-                    if player_id not in players:
-                        players[player_id] = Player(*player_pos)
-                    else:
-                        players[player_id].rect.x, players[player_id].rect.y = player_pos
-
-    finally:
-        writer.close()
-        await writer.wait_closed()
+async def enviar_movimiento(websocket):
+    start_time = time.time()
+    await websocket.send(json.dumps(estado_jugador))
+    await actualizar_estado(websocket)
+    end_time = time.time()
+    latency_ms = int((end_time - start_time) * 1000)
+    estado_jugador['latency'] = latency_ms
 
 async def main():
-    reader, writer = await asyncio.open_connection('44.196.162.180', 8888)
+    async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+                elif event.type == KEYDOWN and event.key == K_SPACE:
+                    estado_jugador['ready'] = not estado_jugador['ready']
+                    await enviar_movimiento(websocket)
+            
+            keys = pygame.key.get_pressed()
+            
+            if keys[K_LEFT] and estado_jugador['x'] > 0:
+                estado_jugador['x'] -= 5
+            if keys[K_RIGHT] and estado_jugador['x'] < 830:
+                estado_jugador['x'] += 5
+            if keys[K_UP] and estado_jugador['y'] > 0:
+                estado_jugador['y'] -= 5
+            if keys[K_DOWN] and estado_jugador['y'] < 510:
+                estado_jugador['y'] += 5
 
-    player = Player(WIDTH // 2, HEIGHT // 2)
-    players = {1: player}
+            await enviar_movimiento(websocket)
 
-    server_task = asyncio.create_task(handle_server_events(reader, writer, players))
+            screen.blit(background, (0, 0))
 
-    clock = pygame.time.Clock()
-    running = True
-    while running:
-        clock.tick(60)
+            cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            for id_jugador, pos in estado_global.items():
+                jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
+                
+                gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
+                screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
-        keys = pygame.key.get_pressed()
-        player.update(keys)
+                if jugador.colliderect(cuadro_verde):
+                    print(f'Player {id_jugador} ha colisionado')
 
-        player_pos = (player.rect.x, player.rect.y)
-        writer.write(pickle.dumps({'player_pos': player_pos}))
-        await writer.drain()
+            jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
+            total_jugadores = len(estado_global)
+            if jugadores_listos < total_jugadores:
+                mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
+            else:
+                mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
 
-        screen.fill((0, 0, 0))
-        for player in players.values():
-            screen.blit(player.image, player.rect)
-        pygame.display.flip()
+            texto_mensaje = font.render(mensaje, True, (255, 255, 255))
+            screen.blit(texto_mensaje, (10, 10))
 
-    server_task.cancel()
-    writer.close()
-    await writer.wait_closed()
+            latency_text = font.render(f'{estado_jugador["latency"]} ms', True, (255, 255, 255))
+            screen.blit(latency_text, (850 - latency_text.get_width() - 10, 10))
 
-asyncio.run(main())
+            pygame.display.update()
+
+            clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
