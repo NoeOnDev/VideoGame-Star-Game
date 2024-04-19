@@ -101,18 +101,19 @@ async def main():
 
                 gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
                 screen.blit(gamertag, (pos['x'], pos['y'] - 20))
-
+                
             meteoro = pygame.transform.scale(meteoro_imagen, (20, 20))
             for meteoro_info in meteoritos:
                 screen.blit(meteoro, (int(meteoro_info['x']), int(meteoro_info['y'])))
-                jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
-                total_jugadores = len(estado_global)
-                if jugadores_listos < total_jugadores:
-                    mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
-                    reproducir_musica(musica_espera)
-                else:
-                    mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
-                    reproducir_musica(musica_juego)
+
+            jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
+            total_jugadores = len(estado_global)
+            if jugadores_listos < total_jugadores:
+                mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
+                reproducir_musica(musica_espera)
+            else:
+                mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
+                reproducir_musica(musica_juego)
 
             texto_mensaje = font.render(mensaje, True, (255, 255, 255))
             screen.blit(texto_mensaje, (10, 10))
