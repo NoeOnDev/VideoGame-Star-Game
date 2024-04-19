@@ -26,8 +26,12 @@ mensaje_perdedor = ''
 
 pygame.mixer.init()
 musica_actual = None
+
 musica_espera = pygame.mixer.Sound('./src/sound/sound_main.mp3')
+musica_espera.set_volume(0.1)
+
 musica_juego = pygame.mixer.Sound('./src/sound/sound_play.mp3')
+musica_juego.set_volume(0.1)
 
 background = pygame.image.load('./src/img/space.jpg')
 nave_imagen = pygame.image.load('./src/img/nave.png')
