@@ -14,15 +14,22 @@ contador_jugadores = 0
 
 meteoritos = []
 
-def crear_meteoros():
-    for _ in range(5):
-        meteoro = {
-            'x': random.randint(0, 850),
-            'y': random.randint(-100, -10),
-            'velocidad_x': random.uniform(-1, 1),
-            'velocidad_y': random.uniform(2, 5)
-        }
-        meteoritos.append(meteoro)
+def crear_meteoros_constantes():
+    intervalo = 1
+
+    async def generar_meteoros():
+        while True:
+            meteoro = {
+                'x': 850,
+                'y': random.randint(0, 530),
+                'velocidad_x': random.uniform(-2, -5),
+                'velocidad_y': 0
+            }
+            meteoritos.append(meteoro)
+            
+            await asyncio.sleep(intervalo)
+    
+    asyncio.create_task(generar_meteoros())
 
 async def manejar_cliente(websocket, path):
     global contador_jugadores
@@ -46,14 +53,14 @@ async def manejar_cliente(websocket, path):
             print(f"Player {id_jugador} ha sido eliminado")
 
 async def actualizar_estado():
-    crear_meteoros()
+    crear_meteoros_constantes()
 
     while True:
         for meteoro in meteoritos:
             meteoro['x'] += meteoro['velocidad_x']
             meteoro['y'] += meteoro['velocidad_y']
 
-        meteoritos[:] = [meteoro for meteoro in meteoritos if meteoro['y'] < 530]
+        meteoritos[:] = [meteoro for meteoro in meteoritos if meteoro['x'] > 0]
 
         estado = {
             'estado_global': estado_global,
