@@ -6,28 +6,44 @@ class GameServer:
         self.players = {}
 
     async def handle_client(self, reader, writer):
+        WIDTH = 850
+        HEIGHT = 530
         addr = writer.get_extra_info('peername')
         print(f"Nueva conexión desde {addr}")
 
         player_id = len(self.players) + 1
-        self.players[player_id] = writer
+        self.players[player_id] = {
+            'writer': writer,
+            'pos': (WIDTH // 2, HEIGHT // 2)
+        }
 
         try:
             while True:
-                data = await reader.read(4096)
+                try:
+                    data = await reader.read(4096)
+                except ConnectionResetError:
+                    print(f"Conexión cerrada por {addr}")
+                    break
+
                 if not data:
                     break
                 message = pickle.loads(data)
                 print(f"Recibido: {message} de {addr}")
 
                 if 'player_pos' in message:
-                    self.players[player_id].write(pickle.dumps({'player_pos': message['player_pos']}))
-                    await self.players[player_id].drain()
+                    self.players[player_id]['pos'] = message['player_pos']
+
+                    for player in self.players.values():
+                        player['writer'].write(pickle.dumps({'players': [{'id': id, 'pos': player['pos']} for id, player in self.players.items()]}))
+                        await player['writer'].drain()
 
         finally:
             del self.players[player_id]
             writer.close()
-            await writer.wait_closed()
+            try:
+                await writer.wait_closed()
+            except ConnectionResetError:
+                print(f"Conexión cerrada por {addr}")
 
     async def start_server(self):
         server = await asyncio.start_server(self.handle_client, '0.0.0.0', 8888)
