@@ -83,9 +83,6 @@ def verificar_colisiones():
             
         if tiempo_restante <= 0:
             todos_ganaron = True
-            meteoritos.clear() 
-            for jugador in estado_global.values():
-                jugador['ready'] = False
 
 async def actualizar_estado():
     global tiempo_restante
@@ -94,7 +91,7 @@ async def actualizar_estado():
         verificar_todos_listos()
 
         if todos_listos and tiempo_restante == 0:
-            tiempo_restante = 60
+            tiempo_restante = 120
             asyncio.create_task(generar_meteoros())
         
         if todos_listos and tiempo_restante > 0:
