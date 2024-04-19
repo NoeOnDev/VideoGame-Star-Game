@@ -104,8 +104,8 @@ async def main():
                 ganador_text = font.render(mensaje_ganador, True, (255, 255, 255))
                 screen.blit(ganador_text, (425 - ganador_text.get_width() // 2, 265 - ganador_text.get_height() // 2))
                 pygame.display.update()
-                pygame.time.wait(2000)
-                running = False
+                pygame.time.wait(4000)
+                running = True
 
             pygame.display.update()
 
