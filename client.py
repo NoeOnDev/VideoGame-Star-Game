@@ -21,10 +21,12 @@ meteoritos = []
 
 tiempo_restante = 0
 
+mensaje_ganador = ''
+
 background = pygame.image.load('./src/img/space.jpg')
 
 async def actualizar_estado(websocket):
-    global estado_global, meteoritos, tiempo_restante
+    global estado_global, meteoritos, tiempo_restante, mensaje_ganador
 
     data = await websocket.recv()
     if data:
@@ -32,6 +34,10 @@ async def actualizar_estado(websocket):
         estado_global = estado['estado_global']
         meteoritos = estado.get('meteoritos', [])
         tiempo_restante = estado.get('tiempo_restante', 0)
+        todos_ganaron = estado.get('todos_ganaron', False)
+
+        if todos_ganaron:
+            mensaje_ganador = '¡Felicitaciones, ganaron!'
 
 async def enviar_movimiento(websocket):
     start_time = time.time()
@@ -42,6 +48,7 @@ async def enviar_movimiento(websocket):
     estado_jugador['latency'] = latency_ms
 
 async def main():
+    global mensaje_ganador
     async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
         running = True
         while running:
@@ -92,6 +99,13 @@ async def main():
             if tiempo_restante > 0:
                 tiempo_text = font.render(f'Tiempo restante: {int(tiempo_restante)} seg', True, (255, 255, 255))
                 screen.blit(tiempo_text, (10, 30))
+
+            if mensaje_ganador:
+                ganador_text = font.render(mensaje_ganador, True, (255, 255, 255))
+                screen.blit(ganador_text, (425 - ganador_text.get_width() // 2, 265 - ganador_text.get_height() // 2))
+                pygame.display.update()
+                pygame.time.wait(2000)
+                running = False
 
             pygame.display.update()
 
