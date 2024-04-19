@@ -44,10 +44,13 @@ async def handle_server_events(reader, writer, players):
             print(f"Recibido: {message}")
 
             if 'players' in message:
-                players.empty()
-                for player_data in message['players'].values():
-                    player = Player(player_data['pos'][0], player_data['pos'][1])
-                    players.add(player)
+                for player_data in message['players']:
+                    player_id = player_data['id']
+                    player_pos = player_data['pos']
+                    if player_id not in players:
+                        players[player_id] = Player(*player_pos)
+                    else:
+                        players[player_id].rect.x, players[player_id].rect.y = player_pos
 
     finally:
         writer.close()
@@ -57,8 +60,7 @@ async def main():
     reader, writer = await asyncio.open_connection('44.196.162.180', 8888)
 
     player = Player(WIDTH // 2, HEIGHT // 2)
-    players = pygame.sprite.Group()
-    players.add(player)
+    players = {1: player}
 
     server_task = asyncio.create_task(handle_server_events(reader, writer, players))
 
@@ -79,7 +81,8 @@ async def main():
         await writer.drain()
 
         screen.fill((0, 0, 0))
-        players.draw(screen)
+        for player in players.values():
+            screen.blit(player.image, player.rect)
         pygame.display.flip()
 
     server_task.cancel()
