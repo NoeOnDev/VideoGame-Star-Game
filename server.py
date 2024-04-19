@@ -26,7 +26,7 @@ async def generar_meteoros():
     intervalo = 1
 
     while True:
-        if todos_listos and tiempo_restante > 0:
+        if clientes and todos_listos and tiempo_restante > 0:
             meteoro = {
                 'x': 850,
                 'y': random.randint(0, 530),
