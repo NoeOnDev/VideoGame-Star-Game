@@ -19,18 +19,19 @@ estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
 estado_global = {}
 meteoritos = []
 
+tiempo_restante = 0
+
 background = pygame.image.load('./src/img/space.jpg')
 
-tiempo_restante = 120  # Tiempo restante en segundos
-
 async def actualizar_estado(websocket):
-    global estado_global, meteoritos
+    global estado_global, meteoritos, tiempo_restante
 
     data = await websocket.recv()
     if data:
         estado = json.loads(data)
         estado_global = estado['estado_global']
         meteoritos = estado.get('meteoritos', [])
+        tiempo_restante = estado.get('tiempo_restante', 0)
 
 async def enviar_movimiento(websocket):
     start_time = time.time()
@@ -41,10 +42,8 @@ async def enviar_movimiento(websocket):
     estado_jugador['latency'] = latency_ms
 
 async def main():
-    global tiempo_restante
     async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
         running = True
-        start_time = time.time()
         while running:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -90,19 +89,10 @@ async def main():
             latency_text = font.render(f'{estado_jugador["latency"]} ms', True, (255, 255, 255))
             screen.blit(latency_text, (850 - latency_text.get_width() - 10, 10))
 
-            current_time = time.time()
-            elapsed_time = current_time - start_time
-            tiempo_restante = 120 - int(elapsed_time)
-
-            if tiempo_restante <= 0:
-                estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
-                estado_global = {}
-                meteoritos = []
-                tiempo_restante = 120
-                start_time = time.time()
-
-            timer_text = font.render(f'Tiempo restante: {tiempo_restante} s', True, (255, 255, 255))
-            screen.blit(timer_text, (850 - timer_text.get_width() - 10, 30))
+            # Mostrar el tiempo restante
+            if tiempo_restante > 0:
+                tiempo_text = font.render(f'Tiempo restante: {int(tiempo_restante)} seg', True, (255, 255, 255))
+                screen.blit(tiempo_text, (10, 30))
 
             pygame.display.update()
 
