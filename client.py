@@ -17,14 +17,18 @@ font = pygame.font.Font(None, 24)
 estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
 
 estado_global = {}
+meteoritos = []
 
 background = pygame.image.load('./src/img/space.jpg')
 
 async def actualizar_estado(websocket):
-    global estado_global
+    global estado_global, meteoritos
+
     data = await websocket.recv()
     if data:
-        estado_global = json.loads(data)
+        estado = json.loads(data)
+        estado_global = estado['estado_global']
+        meteoritos = estado.get('meteoritos', [])
 
 async def enviar_movimiento(websocket):
     start_time = time.time()
@@ -65,6 +69,9 @@ async def main():
                 
                 gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
                 screen.blit(gamertag, (pos['x'], pos['y'] - 20))
+
+            for meteoro in meteoritos:
+                pygame.draw.circle(screen, (255, 255, 255), (int(meteoro['x']), int(meteoro['y'])), 10)
 
             jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
             total_jugadores = len(estado_global)
