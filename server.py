@@ -28,9 +28,9 @@ async def generar_meteoros():
 
     while True:
         if clientes and todos_listos and tiempo_restante > 0:
-            num_meteoros = random.randint(0, 1)
+            num_meteoros = random.choice([0, 0.5, 1])
 
-            for _ in range(num_meteoros):
+            for _ in range(int(num_meteoros)):
                 meteoro = {
                     'x': 850,
                     'y': random.randint(0, 530),
@@ -112,7 +112,8 @@ async def actualizar_estado():
         estado = {
             'estado_global': estado_global,
             'meteoritos': meteoritos,
-            'tiempo_restante': tiempo_restante
+            'tiempo_restante': tiempo_restante,
+            'todos_ganaron': todos_ganaron
         }
 
         estado_json = json.dumps(estado)
