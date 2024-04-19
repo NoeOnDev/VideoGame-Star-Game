@@ -16,6 +16,8 @@ meteoritos = []
 
 todos_listos = False
 
+tarea_generar_meteoros = None
+
 def verificar_todos_listos():
     global todos_listos
     todos_listos = all(jugador['ready'] for jugador in estado_global.values())
@@ -57,8 +59,12 @@ async def manejar_cliente(websocket, path):
             print(f"Player {id_jugador} ha sido eliminado")
 
 async def actualizar_estado():
+    global tarea_generar_meteoros
     while True:
         verificar_todos_listos()
+        
+        if todos_listos and tarea_generar_meteoros is None:
+            tarea_generar_meteoros = asyncio.create_task(generar_meteoros())
 
         if todos_listos and not any(isinstance(t, asyncio.Task) and not t.done() for t in asyncio.all_tasks()):
             asyncio.create_task(generar_meteoros())
