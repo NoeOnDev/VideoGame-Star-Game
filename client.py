@@ -89,7 +89,6 @@ async def main():
             latency_text = font.render(f'{estado_jugador["latency"]} ms', True, (255, 255, 255))
             screen.blit(latency_text, (850 - latency_text.get_width() - 10, 10))
 
-            # Mostrar el tiempo restante
             if tiempo_restante > 0:
                 tiempo_text = font.render(f'Tiempo restante: {int(tiempo_restante)} seg', True, (255, 255, 255))
                 screen.blit(tiempo_text, (10, 30))
