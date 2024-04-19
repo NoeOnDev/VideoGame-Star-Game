@@ -51,7 +51,7 @@ async def handle_server_events(reader, writer):
         await writer.wait_closed()
 
 async def main():
-    reader, writer = await asyncio.open_connection('localhost', 8888)
+    reader, writer = await asyncio.open_connection('44.196.162.180', 8888)
 
     server_task = asyncio.create_task(handle_server_events(reader, writer))
 

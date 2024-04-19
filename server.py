@@ -30,7 +30,7 @@ class GameServer:
             await writer.wait_closed()
 
     async def start_server(self):
-        server = await asyncio.start_server(self.handle_client, 'localhost', 8888)
+        server = await asyncio.start_server(self.handle_client, '0.0.0.0', 8888)
 
         async with server:
             await server.serve_forever()
