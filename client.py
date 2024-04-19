@@ -30,7 +30,6 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_DOWN]:
             self.rect.y += self.speed
 
-        # Mantener al jugador dentro de los límites de la ventana
         self.rect.x = max(0, min(self.rect.x, WIDTH - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, HEIGHT - self.rect.height))
 
