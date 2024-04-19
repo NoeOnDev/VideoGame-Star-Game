@@ -27,13 +27,16 @@ async def generar_meteoros():
 
     while True:
         if clientes and todos_listos and tiempo_restante > 0:
-            meteoro = {
-                'x': 850,
-                'y': random.randint(0, 530),
-                'velocidad_x': random.uniform(-2, -5),
-                'velocidad_y': 0
-            }
-            meteoritos.append(meteoro)
+            num_meteoros = int((120 - tiempo_restante) / 20) + 1
+
+            for _ in range(num_meteoros):
+                meteoro = {
+                    'x': 850,
+                    'y': random.randint(0, 530),
+                    'velocidad_x': random.uniform(-2, -5),
+                    'velocidad_y': 0
+                }
+                meteoritos.append(meteoro)
         
         await asyncio.sleep(intervalo)
 
