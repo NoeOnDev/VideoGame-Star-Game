@@ -33,8 +33,9 @@ class GameServer:
                 if 'player_pos' in message:
                     self.players[player_id]['pos'] = message['player_pos']
 
+                    all_players_data = [{'id': id, 'pos': player['pos']} for id, player in self.players.items()]
                     for player in self.players.values():
-                        player['writer'].write(pickle.dumps({'players': [{'id': id, 'pos': player['pos']} for id, player in self.players.items()]}))
+                        player['writer'].write(pickle.dumps({'players': all_players_data}))
                         await player['writer'].drain()
 
         finally:
