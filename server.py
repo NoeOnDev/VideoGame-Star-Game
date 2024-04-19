@@ -16,6 +16,7 @@ meteoritos = []
 
 todos_listos = False
 todos_ganaron = False
+todos_perdieron = False
 
 tiempo_restante = 0
 
@@ -68,7 +69,7 @@ async def manejar_cliente(websocket, path):
             print(f"Player {id_jugador} ha sido eliminado")
 
 def verificar_colisiones():
-    global tiempo_restante, todos_ganaron
+    global tiempo_restante, todos_ganaron, todos_perdieron
     for id_jugador, jugador in estado_global.items():
         x_jugador = jugador['x']
         y_jugador = jugador['y']
@@ -79,6 +80,7 @@ def verificar_colisiones():
             
             if (x_jugador - x_meteoro) ** 2 + (y_jugador - y_meteoro) ** 2 < 400:
                 tiempo_restante = 0
+                todos_perdieron = True
                 return
             
         if tiempo_restante <= 0:
@@ -113,7 +115,8 @@ async def actualizar_estado():
             'estado_global': estado_global,
             'meteoritos': meteoritos,
             'tiempo_restante': tiempo_restante,
-            'todos_ganaron': todos_ganaron
+            'todos_ganaron': todos_ganaron,
+            'todos_perdieron': todos_perdieron
         }
 
         estado_json = json.dumps(estado)

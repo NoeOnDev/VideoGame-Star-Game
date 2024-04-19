@@ -22,11 +22,12 @@ meteoritos = []
 tiempo_restante = 0
 
 mensaje_ganador = ''
+mensaje_perdedor = ''
 
 background = pygame.image.load('./src/img/space.jpg')
 
 async def actualizar_estado(websocket):
-    global estado_global, meteoritos, tiempo_restante, mensaje_ganador
+    global estado_global, meteoritos, tiempo_restante, mensaje_ganador, mensaje_perdedor
 
     data = await websocket.recv()
     if data:
@@ -35,9 +36,12 @@ async def actualizar_estado(websocket):
         meteoritos = estado.get('meteoritos', [])
         tiempo_restante = estado.get('tiempo_restante', 0)
         todos_ganaron = estado.get('todos_ganaron', False)
+        todos_perdieron = estado.get('todos_perdieron', False)
 
         if todos_ganaron:
             mensaje_ganador = '¡Felicitaciones, ganaron!'
+        if todos_perdieron:
+            mensaje_perdedor = 'Lo siento, todos perdieron.'
 
 async def enviar_movimiento(websocket):
     start_time = time.time()
@@ -48,7 +52,7 @@ async def enviar_movimiento(websocket):
     estado_jugador['latency'] = latency_ms
 
 async def main():
-    global mensaje_ganador
+    global mensaje_ganador, mensaje_perdedor
     async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
         running = True
         while running:
@@ -103,6 +107,13 @@ async def main():
             if mensaje_ganador:
                 ganador_text = font.render(mensaje_ganador, True, (255, 255, 255))
                 screen.blit(ganador_text, (425 - ganador_text.get_width() // 2, 265 - ganador_text.get_height() // 2))
+                pygame.display.update()
+                pygame.time.wait(4000)
+                running = False
+                
+            if mensaje_perdedor:
+                perdedor_text = font.render(mensaje_perdedor, True, (255, 255, 255))
+                screen.blit(perdedor_text, (425 - perdedor_text.get_width() // 2, 265 - perdedor_text.get_height() // 2))
                 pygame.display.update()
                 pygame.time.wait(4000)
                 running = False
