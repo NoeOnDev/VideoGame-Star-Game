@@ -25,6 +25,8 @@ mensaje_ganador = ''
 mensaje_perdedor = ''
 
 background = pygame.image.load('./src/img/space.jpg')
+nave_imagen = pygame.image.load('./src/img/nave.png')
+meteoro_imagen = pygame.image.load('./src/img/asteroide.png')
 
 async def actualizar_estado(websocket):
     global estado_global, meteoritos, tiempo_restante, mensaje_ganador, mensaje_perdedor
@@ -82,14 +84,15 @@ async def main():
             screen.blit(background, (0, 0))
 
             for id_jugador, pos in estado_global.items():
-                jugador = pygame.draw.rect(screen, (255, 0, 0), (pos['x'], pos['y'], 20, 20))
-                
+                nave = pygame.transform.scale(nave_imagen, (35, 20))
+                screen.blit(nave, (pos['x'], pos['y']))
+
                 gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
                 screen.blit(gamertag, (pos['x'], pos['y'] - 20))
 
-            for meteoro in meteoritos:
-                pygame.draw.circle(screen, (255, 255, 255), (int(meteoro['x']), int(meteoro['y'])), 10)
-
+            meteoro = pygame.transform.scale(meteoro_imagen, (20, 20))
+            for meteoro_info in meteoritos:
+                screen.blit(meteoro, (int(meteoro_info['x']), int(meteoro_info['y'])))
             jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
             total_jugadores = len(estado_global)
             if jugadores_listos < total_jugadores:
