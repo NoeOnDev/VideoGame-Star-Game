@@ -38,7 +38,7 @@ async def generar_meteoros():
         await asyncio.sleep(intervalo)
 
 async def manejar_cliente(websocket, path):
-    global contador_jugadores
+    global contador_jugadores, tarea_generar_meteoros
     id_jugador = contador_jugadores
     contador_jugadores += 1
     estado_global[id_jugador] = {'x': 400, 'y': 300, 'ready': False}
@@ -50,6 +50,12 @@ async def manejar_cliente(websocket, path):
             datos = await websocket.recv()
             movimiento = json.loads(datos)
             estado_global[id_jugador] = movimiento
+            
+            if not movimiento['ready'] and tarea_generar_meteoros is not None:
+                tarea_generar_meteoros.cancel()
+                tarea_generar_meteoros = None
+                meteoritos.clear()
+
     except websockets.ConnectionClosed:
         print(f"La conexión con el cliente {id_jugador} ha sido cerrada inesperadamente.")
     finally:

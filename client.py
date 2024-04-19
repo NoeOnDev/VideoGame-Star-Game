@@ -12,7 +12,7 @@ pygame.init()
 screen = pygame.display.set_mode((850, 530))
 clock = pygame.time.Clock()
 
-font = pygame.font.Font(None, 24)
+font = pygame.font.Font(None, 20)
 
 estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
 
