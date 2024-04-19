@@ -24,9 +24,21 @@ tiempo_restante = 0
 mensaje_ganador = ''
 mensaje_perdedor = ''
 
+pygame.mixer.init()
+musica_actual = None
+musica_espera = pygame.mixer.Sound('./src/sound/sound_main.mp3')
+musica_juego = pygame.mixer.Sound('./src/sound/sound_play.mp3')
+
 background = pygame.image.load('./src/img/space.jpg')
 nave_imagen = pygame.image.load('./src/img/nave.png')
 meteoro_imagen = pygame.image.load('./src/img/asteroide.png')
+
+def reproducir_musica(musica):
+    global musica_actual
+    if musica_actual != musica:
+        pygame.mixer.stop()
+        musica.play(-1)
+        musica_actual = musica
 
 async def actualizar_estado(websocket):
     global estado_global, meteoritos, tiempo_restante, mensaje_ganador, mensaje_perdedor
@@ -93,12 +105,14 @@ async def main():
             meteoro = pygame.transform.scale(meteoro_imagen, (20, 20))
             for meteoro_info in meteoritos:
                 screen.blit(meteoro, (int(meteoro_info['x']), int(meteoro_info['y'])))
-            jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
-            total_jugadores = len(estado_global)
-            if jugadores_listos < total_jugadores:
-                mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
-            else:
-                mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
+                jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
+                total_jugadores = len(estado_global)
+                if jugadores_listos < total_jugadores:
+                    mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
+                    reproducir_musica(musica_espera)
+                else:
+                    mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
+                    reproducir_musica(musica_juego)
 
             texto_mensaje = font.render(mensaje, True, (255, 255, 255))
             screen.blit(texto_mensaje, (10, 10))
