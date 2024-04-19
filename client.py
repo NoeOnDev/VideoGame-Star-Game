@@ -3,6 +3,7 @@ import websockets
 import pygame
 from pygame.locals import *
 import json
+import time
 
 server_ip = '44.196.162.180'
 server_port = 9009
@@ -13,7 +14,7 @@ clock = pygame.time.Clock()
 
 font = pygame.font.Font(None, 24)
 
-estado_jugador = {'x': 400, 'y': 300, 'ready': False}
+estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
 
 estado_global = {}
 
@@ -26,7 +27,12 @@ async def actualizar_estado(websocket):
         estado_global = json.loads(data)
 
 async def enviar_movimiento(websocket):
+    start_time = time.time()
     await websocket.send(json.dumps(estado_jugador))
+    await actualizar_estado(websocket)
+    end_time = time.time()
+    latency_ms = int((end_time - start_time) * 1000)
+    estado_jugador['latency'] = latency_ms
 
 async def main():
     async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
@@ -52,8 +58,6 @@ async def main():
 
             await enviar_movimiento(websocket)
 
-            await actualizar_estado(websocket)
-
             screen.blit(background, (0, 0))
 
             cuadro_verde = pygame.draw.rect(screen, (0, 255, 0), (0, 300-50, 20, 20))
@@ -76,6 +80,9 @@ async def main():
 
             texto_mensaje = font.render(mensaje, True, (255, 255, 255))
             screen.blit(texto_mensaje, (10, 10))
+
+            latency_text = font.render(f'{estado_jugador["latency"]} ms', True, (255, 255, 255))
+            screen.blit(latency_text, (850 - latency_text.get_width() - 10, 10))
 
             pygame.display.update()
 
