@@ -1,49 +1,40 @@
 import asyncio
-import websockets
-import json
-import time
+import pickle
 
-server_ip = '0.0.0.0'
-server_port = 9009
+class GameServer:
+    def __init__(self):
+        self.players = {}
 
-clientes = set()
+    async def handle_client(self, reader, writer):
+        addr = writer.get_extra_info('peername')
+        print(f"Nueva conexión desde {addr}")
 
-estado_global = {}
+        player_id = len(self.players) + 1
+        self.players[player_id] = writer
 
-contador_jugadores = 0
+        try:
+            while True:
+                data = await reader.read(4096)
+                if not data:
+                    break
+                message = pickle.loads(data)
+                print(f"Recibido: {message} de {addr}")
 
-async def manejar_cliente(websocket, path):
-    global contador_jugadores
-    id_jugador = contador_jugadores
-    contador_jugadores += 1
-    estado_global[id_jugador] = {'x': 400, 'y': 300, 'listo': False}
-    clientes.add(websocket)
-    print(f"Player {id_jugador} se ha unido al servidor.")
-    try:
-        while True:
-            datos = await websocket.recv()
-            movimiento = json.loads(datos)
-            estado_global[id_jugador] = movimiento
-    except websockets.ConnectionClosed:
-        print("La conexión con el cliente ha sido cerrada inesperadamente.")
-    finally:
-        clientes.remove(websocket)
-        if id_jugador in estado_global:
-            del estado_global[id_jugador]
-            print(f"Player {id_jugador} ha sido eliminado")
+                if 'player_pos' in message:
+                    self.players[player_id].write(pickle.dumps({'player_pos': message['player_pos']}))
+                    await self.players[player_id].drain()
 
-async def actualizar_estado():
-    while True:
-        estado = json.dumps(estado_global)
-        if clientes:
-            tareas = [cliente.send(estado) for cliente in clientes if cliente.open]
-            if tareas:
-                await asyncio.wait(tareas)
-        await asyncio.sleep(0.1)
+        finally:
+            del self.players[player_id]
+            writer.close()
+            await writer.wait_closed()
 
-start_server = websockets.serve(manejar_cliente, server_ip, server_port)
+    async def start_server(self):
+        server = await asyncio.start_server(self.handle_client, 'localhost', 8888)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(start_server)
-loop.create_task(actualizar_estado())
-loop.run_forever()
+        async with server:
+            await server.serve_forever()
+
+if __name__ == '__main__':
+    game_server = GameServer()
+    asyncio.run(game_server.start_server())
