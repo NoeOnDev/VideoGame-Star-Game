@@ -6,138 +6,138 @@ import random
 server_ip = '0.0.0.0'
 server_port = 9009
 
-clientes = set()
+clients = set()
 
-estado_global = {}
+global_state = {}
 
-contador_jugadores = 0
+player_counter = 0
 
-meteoritos = []
+meteors = []
 
-todos_listos = False
-todos_ganaron = False
-todos_perdieron = False
+all_ready = False
+all_won = False
+all_lost = False
 
-tiempo_restante = 0
+remaining_time = 0
 
-def verificar_todos_listos():
-    global todos_listos
-    todos_listos = all(jugador['ready'] for jugador in estado_global.values())
+def check_all_ready():
+    global all_ready
+    all_ready = all(player['ready'] for player in global_state.values())
 
-async def generar_meteoros():
-    intervalo = 1
+async def generate_meteors():
+    interval = 1
 
     while True:
-        if clientes and todos_listos and tiempo_restante > 0:
-            num_meteoros = random.choice([0, 0.5, 1])
+        if clients and all_ready and remaining_time > 0:
+            num_meteors = random.choice([0, 0.5, 1])
 
-            for _ in range(int(num_meteoros)):
-                meteoro = {
+            for _ in range(int(num_meteors)):
+                meteor = {
                     'x': 850,
                     'y': random.randint(0, 530),
-                    'velocidad_x': random.uniform(-2, -5),
-                    'velocidad_y': 0
+                    'velocity_x': random.uniform(-2, -5),
+                    'velocity_y': 0
                 }
-                meteoritos.append(meteoro)
+                meteors.append(meteor)
         
-        await asyncio.sleep(intervalo)
+        await asyncio.sleep(interval)
 
-async def manejar_cliente(websocket, path):
-    global contador_jugadores, tiempo_restante
-    id_jugador = contador_jugadores
-    contador_jugadores += 1
-    estado_global[id_jugador] = {'x': 400, 'y': 300, 'ready': False}
-    clientes.add(websocket)
-    print(f"Player {id_jugador} se ha unido al servidor.")
+async def handle_client(websocket, path):
+    global player_counter, remaining_time
+    player_id = player_counter
+    player_counter += 1
+    global_state[player_id] = {'x': 400, 'y': 300, 'ready': False}
+    clients.add(websocket)
+    print(f"Player {player_id} has joined the server.")
 
     try:
         while True:
-            datos = await websocket.recv()
-            movimiento = json.loads(datos)
-            estado_global[id_jugador] = movimiento
+            data = await websocket.recv()
+            movement = json.loads(data)
+            global_state[player_id] = movement
             
-            if not movimiento['ready'] and tiempo_restante > 0:
-                tiempo_restante = 0
-                meteoritos.clear()
+            if not movement['ready'] and remaining_time > 0:
+                remaining_time = 0
+                meteors.clear()
 
     except websockets.ConnectionClosed:
-        print(f"La conexión con el cliente {id_jugador} ha sido cerrada inesperadamente.")
+        print(f"Connection with client {player_id} has been unexpectedly closed.")
     finally:
-        clientes.remove(websocket)
-        if id_jugador in estado_global:
-            del estado_global[id_jugador]
-            print(f"Player {id_jugador} ha sido eliminado")
+        clients.remove(websocket)
+        if player_id in global_state:
+            del global_state[player_id]
+            print(f"Player {player_id} has been removed.")
 
-def verificar_colisiones():
-    global tiempo_restante, todos_ganaron, todos_perdieron
-    for id_jugador, jugador in estado_global.items():
-        x_jugador = jugador['x']
-        y_jugador = jugador['y']
+def check_collisions():
+    global remaining_time, all_won, all_lost
+    for player_id, player in global_state.items():
+        x_player = player['x']
+        y_player = player['y']
         
-        for meteoro in meteoritos:
-            x_meteoro = meteoro['x']
-            y_meteoro = meteoro['y']
+        for meteor in meteors:
+            x_meteor = meteor['x']
+            y_meteor = meteor['y']
             
-            if (x_jugador - x_meteoro) ** 2 + (y_jugador - y_meteoro) ** 2 < 400:
-                tiempo_restante = 0
-                todos_perdieron = True
+            if (x_player - x_meteor) ** 2 + (y_player - y_meteor) ** 2 < 400:
+                remaining_time = 0
+                all_lost = True
                 return
             
-        if tiempo_restante <= 0:
-            todos_ganaron = True
+        if remaining_time <= 0:
+            all_won = True
 
-async def actualizar_estado():
-    global tiempo_restante, todos_ganaron, todos_perdieron
+async def update_state():
+    global remaining_time, all_won, all_lost
 
     while True:
-        verificar_todos_listos()
+        check_all_ready()
 
-        if todos_listos and tiempo_restante == 0:
-            tiempo_restante = 120
-            asyncio.create_task(generar_meteoros())
-            todos_ganaron = False
-            todos_perdieron = False
+        if all_ready and remaining_time == 0:
+            remaining_time = 120
+            asyncio.create_task(generate_meteors())
+            all_won = False
+            all_lost = False
         
-        if todos_ganaron or todos_perdieron:
-            tiempo_restante = 0
-            meteoritos.clear()
-            todos_ganaron = False
-            todos_perdieron = False
+        if all_won or all_lost:
+            remaining_time = 0
+            meteors.clear()
+            all_won = False
+            all_lost = False
         
-        if todos_listos and tiempo_restante > 0:
-            tiempo_restante -= 0.1
-            verificar_colisiones()
+        if all_ready and remaining_time > 0:
+            remaining_time -= 0.1
+            check_collisions()
 
-            if tiempo_restante <= 0:
-                tiempo_restante = 0
-                meteoritos.clear()
+            if remaining_time <= 0:
+                remaining_time = 0
+                meteors.clear()
         
-        for meteoro in meteoritos:
-            meteoro['x'] += meteoro['velocidad_x']
-            meteoro['y'] += meteoro['velocidad_y']
+        for meteor in meteors:
+            meteor['x'] += meteor['velocity_x']
+            meteor['y'] += meteor['velocity_y']
 
-        meteoritos[:] = [meteoro for meteoro in meteoritos if meteoro['x'] > 0]
+        meteors[:] = [meteor for meteor in meteors if meteor['x'] > 0]
 
-        estado = {
-            'estado_global': estado_global,
-            'meteoritos': meteoritos,
-            'tiempo_restante': tiempo_restante,
-            'todos_ganaron': todos_ganaron,
-            'todos_perdieron': todos_perdieron
+        state = {
+            'global_state': global_state,
+            'meteors': meteors,
+            'remaining_time': remaining_time,
+            'all_won': all_won,
+            'all_lost': all_lost
         }
 
-        estado_json = json.dumps(estado)
+        state_json = json.dumps(state)
         
-        if clientes:
-            tareas = [asyncio.create_task(cliente.send(estado_json)) for cliente in clientes if cliente.open]
-            if tareas:
-                await asyncio.wait(tareas)
+        if clients:
+            tasks = [asyncio.create_task(client.send(state_json)) for client in clients if client.open]
+            if tasks:
+                await asyncio.wait(tasks)
 
         await asyncio.sleep(0.1)
 
-start_server = websockets.serve(manejar_cliente, server_ip, server_port)
+start_server = websockets.serve(handle_client, server_ip, server_port)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(start_server)
-loop.create_task(actualizar_estado())
+loop.create_task(update_state())
 loop.run_forever()
