@@ -14,65 +14,65 @@ clock = pygame.time.Clock()
 
 font = pygame.font.Font(None, 20)
 
-estado_jugador = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
+player_state = {'x': 400, 'y': 300, 'ready': False, 'latency': 0}
 
-estado_global = {}
-meteoritos = []
+global_state = {}
+meteors = []
 
-tiempo_restante = 0
+remaining_time = 0
 
-mensaje_ganador = ''
-mensaje_perdedor = ''
+winner_message = ''
+loser_message = ''
 
 pygame.mixer.init()
-musica_actual = None
+current_music = None
 
-musica_espera = pygame.mixer.Sound('./src/sound/sound_main.mp3')
-musica_espera.set_volume(0.1)
+waiting_music = pygame.mixer.Sound('./src/sound/sound_main.mp3')
+waiting_music.set_volume(0.1)
 
-musica_juego = pygame.mixer.Sound('./src/sound/sound_play.mp3')
-musica_juego.set_volume(0.1)
+game_music = pygame.mixer.Sound('./src/sound/sound_play.mp3')
+game_music.set_volume(0.1)
 
 background = pygame.image.load('./src/img/space.jpg')
-nave_imagen = pygame.image.load('./src/img/nave.png')
-meteoro_imagen = pygame.image.load('./src/img/asteroide.png')
+ship_image = pygame.image.load('./src/img/nave.png')
+meteor_image = pygame.image.load('./src/img/asteroide.png')
 
-def reproducir_musica(musica):
-    global musica_actual
-    if musica_actual != musica:
+def play_music(music):
+    global current_music
+    if current_music != music:
         pygame.mixer.stop()
-        musica.play(-1)
-        musica_actual = musica
+        music.play(-1)
+        current_music = music
 
-async def actualizar_estado(websocket):
-    global estado_global, meteoritos, tiempo_restante, mensaje_ganador, mensaje_perdedor
+async def update_state(websocket):
+    global global_state, meteors, remaining_time, winner_message, loser_message
 
     data = await websocket.recv()
     if data:
-        estado = json.loads(data)
-        estado_global = estado['estado_global']
-        meteoritos = estado.get('meteoritos', [])
-        tiempo_restante = estado.get('tiempo_restante', 0)
-        todos_ganaron = estado.get('todos_ganaron', False)
-        todos_perdieron = estado.get('todos_perdieron', False)
+        state = json.loads(data)
+        global_state = state['global_state']
+        meteors = state.get('meteors', [])
+        remaining_time = state.get('remaining_time', 0)
+        everyone_won = state.get('everyone_won', False)
+        everyone_lost = state.get('everyone_lost', False)
 
-        if todos_ganaron:
-            mensaje_ganador = '¡Felicitaciones, ganaron!'
-        if todos_perdieron:
-            mensaje_perdedor = 'Lo siento, todos perdieron.'
+        if everyone_won:
+            winner_message = 'Congratulations, you won!'
+        if everyone_lost:
+            loser_message = 'Sorry, everyone lost.'
 
-async def enviar_movimiento(websocket):
+async def send_movement(websocket):
     start_time = time.time()
-    await websocket.send(json.dumps(estado_jugador))
-    await actualizar_estado(websocket)
+    await websocket.send(json.dumps(player_state))
+    await update_state(websocket)
     end_time = time.time()
     latency_ms = int((end_time - start_time) * 1000)
-    estado_jugador['latency'] = latency_ms
+    player_state['latency'] = latency_ms
 
 async def main():
-    global mensaje_ganador, mensaje_perdedor
-    mensaje_ganador = ''
-    mensaje_perdedor = ''
+    global winner_message, loser_message
+    winner_message = ''
+    loser_message = ''
 
     async with websockets.connect(f"ws://{server_ip}:{server_port}") as websocket:
         running = True
@@ -81,64 +81,64 @@ async def main():
                 if event.type == QUIT:
                     running = False
                 elif event.type == KEYDOWN and event.key == K_SPACE:
-                    estado_jugador['ready'] = not estado_jugador['ready']
-                    await enviar_movimiento(websocket)
+                    player_state['ready'] = not player_state['ready']
+                    await send_movement(websocket)
             
             keys = pygame.key.get_pressed()
             
-            if keys[K_LEFT] and estado_jugador['x'] > 0:
-                estado_jugador['x'] -= 5
-            if keys[K_RIGHT] and estado_jugador['x'] < 830:
-                estado_jugador['x'] += 5
-            if keys[K_UP] and estado_jugador['y'] > 0:
-                estado_jugador['y'] -= 5
-            if keys[K_DOWN] and estado_jugador['y'] < 510:
-                estado_jugador['y'] += 5
+            if keys[K_LEFT] and player_state['x'] > 0:
+                player_state['x'] -= 5
+            if keys[K_RIGHT] and player_state['x'] < 830:
+                player_state['x'] += 5
+            if keys[K_UP] and player_state['y'] > 0:
+                player_state['y'] -= 5
+            if keys[K_DOWN] and player_state['y'] < 510:
+                player_state['y'] += 5
 
-            await enviar_movimiento(websocket)
+            await send_movement(websocket)
 
             screen.blit(background, (0, 0))
 
-            for id_jugador, pos in estado_global.items():
-                nave = pygame.transform.scale(nave_imagen, (35, 20))
-                screen.blit(nave, (pos['x'], pos['y']))
+            for player_id, pos in global_state.items():
+                ship = pygame.transform.scale(ship_image, (35, 20))
+                screen.blit(ship, (pos['x'], pos['y']))
 
-                gamertag = font.render(f'Player {id_jugador}', True, (255, 255, 255))
+                gamertag = font.render(f'Player {player_id}', True, (255, 255, 255))
                 screen.blit(gamertag, (pos['x'], pos['y'] - 20))
                 
-            meteoro = pygame.transform.scale(meteoro_imagen, (20, 20))
-            for meteoro_info in meteoritos:
-                screen.blit(meteoro, (int(meteoro_info['x']), int(meteoro_info['y'])))
+            meteor = pygame.transform.scale(meteor_image, (20, 20))
+            for meteor_info in meteors:
+                screen.blit(meteor, (int(meteor_info['x']), int(meteor_info['y'])))
 
-            jugadores_listos = sum(1 for jugador in estado_global.values() if 'ready' in jugador and jugador['ready'])
-            total_jugadores = len(estado_global)
-            if jugadores_listos < total_jugadores:
-                mensaje = f'JUGADORES LISTOS ({jugadores_listos}/{total_jugadores})'
-                reproducir_musica(musica_espera)
+            ready_players = sum(1 for player in global_state.values() if 'ready' in player and player['ready'])
+            total_players = len(global_state)
+            if ready_players < total_players:
+                message = f'READY PLAYERS ({ready_players}/{total_players})'
+                play_music(waiting_music)
             else:
-                mensaje = '¡TODOS LOS JUGADORES ESTÁN LISTOS!'
-                reproducir_musica(musica_juego)
+                message = 'ALL PLAYERS ARE READY!'
+                play_music(game_music)
 
-            texto_mensaje = font.render(mensaje, True, (255, 255, 255))
-            screen.blit(texto_mensaje, (10, 10))
+            message_text = font.render(message, True, (255, 255, 255))
+            screen.blit(message_text, (10, 10))
 
-            latency_text = font.render(f'{estado_jugador["latency"]} ms', True, (255, 255, 255))
+            latency_text = font.render(f'{player_state["latency"]} ms', True, (255, 255, 255))
             screen.blit(latency_text, (850 - latency_text.get_width() - 10, 10))
 
-            if tiempo_restante > 0:
-                tiempo_text = font.render(f'Tiempo restante: {int(tiempo_restante)} seg', True, (255, 255, 255))
-                screen.blit(tiempo_text, (10, 30))
+            if remaining_time > 0:
+                time_text = font.render(f'Remaining time: {int(remaining_time)} sec', True, (255, 255, 255))
+                screen.blit(time_text, (10, 30))
 
-            if mensaje_ganador:
-                ganador_text = font.render(mensaje_ganador, True, (255, 255, 255))
-                screen.blit(ganador_text, (425 - ganador_text.get_width() // 2, 265 - ganador_text.get_height() // 2))
+            if winner_message:
+                winner_text = font.render(winner_message, True, (255, 255, 255))
+                screen.blit(winner_text, (425 - winner_text.get_width() // 2, 265 - winner_text.get_height() // 2))
                 pygame.display.update()
                 pygame.time.wait(2000)
                 running = False
                 
-            if mensaje_perdedor:
-                perdedor_text = font.render(mensaje_perdedor, True, (255, 255, 255))
-                screen.blit(perdedor_text, (425 - perdedor_text.get_width() // 2, 265 - perdedor_text.get_height() // 2))
+            if loser_message:
+                loser_text = font.render(loser_message, True, (255, 255, 255))
+                screen.blit(loser_text, (425 - loser_text.get_width() // 2, 265 - loser_text.get_height() // 2))
                 pygame.display.update()
                 pygame.time.wait(2000)
                 running = False
